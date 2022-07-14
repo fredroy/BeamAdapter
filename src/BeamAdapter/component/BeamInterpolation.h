@@ -125,6 +125,7 @@ public:
     {
         if (dynamic_cast<MechanicalState<DataTypes>*>(context->getMechanicalState()) == nullptr)
         {
+            msg_error("BeamInterpolation") << "Could not find any suitable MechanicalState in the context.";
             return false;
         }
         return BaseObject::canCreate(obj, context, arg);
