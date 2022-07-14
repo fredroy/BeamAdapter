@@ -23,16 +23,13 @@
 
 #include <sofa/helper/BackTrace.h>
 
-#include <sofa/component/statecontainer/MechanicalObject.h>
-
 using sofa::core::topology::BaseMeshTopology ;
 using sofa::core::objectmodel::Data ;
 
-#include <sofa/component/topology/container/dynamic/TetrahedronSetTopologyContainer.h>
-using sofa::component::topology::container::dynamic::TetrahedronSetTopologyContainer ;
-
 using sofa::helper::WriteAccessor ;
 using sofa::defaulttype::Rigid3dTypes ;
+
+#include <sofa/core/ExecParams.h>
 using sofa::core::ExecParams ;
 
 #include <sofa/simulation/common/SceneLoaderXML.h>
@@ -45,14 +42,11 @@ using sofa::simulation::Node ;
 using sofa::simulation::setSimulation ;
 using sofa::core::objectmodel::New ;
 using sofa::core::objectmodel::BaseData ;
-using sofa::component::statecontainer::MechanicalObject ;
 
 #include <regex>
 #include <vector>
 #include <string>
 using std::string;
-
-#include <BeamAdapter/component/forcefield/AdaptiveBeamForceFieldAndMass.h>
 
 namespace sofa
 {
@@ -107,22 +101,22 @@ struct BeamInterpolationTest : public  sofa::testing::BaseSimulationTest,
 static std::vector<std::vector<std::string>> teststrings ={
     {
         "<MeshTopology name='meshSuture' edges='0 1' />"
-        "<MechanicalObject template='Rigid3d' name='DOFs' showIndices='0' position='0 0 0 0 0 0 1   1 0 0 0 0 0 1'/>"
+        "<MechanicalObject template='Rigid' name='DOFs' showIndices='0' position='0 0 0 0 0 0 1   1 0 0 0 0 0 1'/>"
         ,""
         , "T"
     },
     {
-        "<MechanicalObject template='Rigid3d' name='DOFs' showIndices='0' position='0 0 0 0 0 0 1   1 0 0 0 0 0 1'/>"
+        "<MechanicalObject template='Rigid' name='DOFs' showIndices='0' position='0 0 0 0 0 0 1   1 0 0 0 0 0 1'/>"
         ,"<MeshTopology name='meshSuture' edges='0 1' />"
         , "T"
     },
     {
         "<MeshTopology name='meshSuture' edges='0 1' />"
-        ,"<MechanicalObject template='Rigid3d' name='DOFs' showIndices='0' position='0 0 0 0 0 0 1   1 0 0 0 0 0 1'/>"
+        ,"<MechanicalObject template='Rigid' name='DOFs' showIndices='0' position='0 0 0 0 0 0 1   1 0 0 0 0 0 1'/>"
         , "W"
     },
     {
-        "<MechanicalObject template='Rigid3d' name='DOFs' showIndices='0' position='0 0 0 0 0 0 1   1 0 0 0 0 0 1'/>"
+        "<MechanicalObject template='Rigid' name='DOFs' showIndices='0' position='0 0 0 0 0 0 1   1 0 0 0 0 0 1'/>"
         ,"<AdaptiveBeamForceFieldAndMass name='ForceField' interpolation='@Interpol' massDensity='1.0'/>"
         , "W"
     },
@@ -137,7 +131,7 @@ TEST_P(BeamInterpolationTest, checkMinimalScene) {
     ASSERT_NO_THROW(this->simpleScene(GetParam())) ;
 }
 
-INSTANTIATE_TEST_CASE_P(checkMinimalScene,
+INSTANTIATE_TEST_SUITE_P(checkMinimalScene,
                         BeamInterpolationTest, ::testing::ValuesIn(teststrings) ) ;
 
 }
