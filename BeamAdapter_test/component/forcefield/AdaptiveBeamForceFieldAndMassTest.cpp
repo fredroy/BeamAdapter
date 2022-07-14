@@ -23,12 +23,8 @@
 
 #include <sofa/helper/BackTrace.h>
 
-#include <sofa/component/statecontainer/MechanicalObject.h>
 using sofa::core::topology::BaseMeshTopology ;
 using sofa::core::objectmodel::Data ;
-
-#include <sofa/component/topology/container/dynamic/TetrahedronSetTopologyContainer.h>
-using sofa::component::topology::container::dynamic::TetrahedronSetTopologyContainer;
 
 using sofa::helper::WriteAccessor ;
 using sofa::defaulttype::Rigid3dTypes ;
@@ -42,10 +38,6 @@ using sofa::simulation::Node ;
 using sofa::simulation::setSimulation ;
 using sofa::core::objectmodel::New ;
 using sofa::core::objectmodel::BaseData ;
-using sofa::component::statecontainer::MechanicalObject ;
-
-#include <BeamAdapter/component/forcefield/AdaptiveBeamForceFieldAndMass.h>
-using sofa::component::forcefield::AdaptiveBeamForceFieldAndMass;
 
 #include <string>
 using std::string;
@@ -74,19 +66,14 @@ struct AdaptiveBeamForceFieldAndMassTest : public sofa::testing::BaseSimulationT
                 "               <FixedConstraint indices='0' />"
                 "</Node> " ;
         Node::SPtr root = SceneLoaderXML::loadFromMemory ( "test1", scene.c_str(), scene.size());
-
         ASSERT_NE(root.get(), nullptr);
-        MechanicalObject<defaulttype::Rigid3dTypes>* mechanicalObject = nullptr;
-        root->getTreeObject(mechanicalObject);
 
-        ASSERT_NE(mechanicalObject, nullptr);
-        EXPECT_TRUE(mechanicalObject->getName() == "DOFs") ;
+        auto* mechanicalObject = root->getObject("DOFs");
+        EXPECT_NE(mechanicalObject, nullptr);
 
-        AdaptiveBeamForceFieldAndMass<defaulttype::Rigid3dTypes>* beamForceFieldMass  = nullptr;
+        auto* beamForceFieldMass = root->getObject("ForceField");
+        EXPECT_NE(beamForceFieldMass, nullptr);
 
-        root->getTreeObject(beamForceFieldMass);
-
-        ASSERT_NE(beamForceFieldMass, nullptr);
         ASSERT_NO_THROW(beamForceFieldMass->init());
         ASSERT_NO_THROW(beamForceFieldMass->reinit());
     }
