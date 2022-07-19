@@ -380,7 +380,7 @@ void AdaptiveBeamForceFieldAndMass<DataTypes>::applyMassLarge( VecDeriv& df, con
 /////////////////////////////////////
 
 template<class DataTypes>
-void AdaptiveBeamForceFieldAndMass<DataTypes>::addMDx(const MechanicalParams* mparams , DataVecDeriv& dataf, const DataVecDeriv& datadx, double factor)
+void AdaptiveBeamForceFieldAndMass<DataTypes>::addMDx(const MechanicalParams* mparams , DataVecDeriv& dataf, const DataVecDeriv& datadx, SReal factor)
 {
     SOFA_UNUSED(mparams);
 

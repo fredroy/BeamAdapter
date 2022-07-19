@@ -276,8 +276,8 @@ void WireRestShape<DataTypes>::init()
     msg_info() <<"WireRestShape end init" ;
 
     // Prepare beam sections
-    double r 					= this->d_radius1.getValue();
-    double rInner 				= this->d_innerRadius1.getValue();
+    Real r 					    = this->d_radius1.getValue();
+    Real rInner 				= this->d_innerRadius1.getValue();
     this->beamSection1._r 		= r;
     this->beamSection1._rInner 	= rInner;
     this->beamSection1._Iz		= M_PI*(r*r*r*r - rInner*rInner*rInner*rInner)/4.0;
@@ -410,7 +410,7 @@ void WireRestShape<DataTypes>::getCollisionSampling(Real &dx, const Real &x_curv
     }
 
     dx=d_length.getValue()/20;
-    msg_error() << " problem is  getCollisionSampling : x_curv "<<x_used<<" is not between keyPoints"<<d_keyPoints.getValue() ;
+    msg_error() << " problem is  getCollisionSampling : x_curv "<<x_used<<"  is not between keyPoints"<<d_keyPoints.getValue() ;
 }
 
 
@@ -689,7 +689,7 @@ template <class DataTypes>
 void WireRestShape<DataTypes>::initRestConfig()
 {
     m_curvAbs.clear();
-    double tot = 0;
+    SReal tot = 0;
     m_curvAbs.push_back(0);
     Quat<Real> input, output;
     input.identity();
@@ -700,7 +700,7 @@ void WireRestShape<DataTypes>::initRestConfig()
     for(unsigned int i = 0; i < m_localRestPositions.size() - 1; i++)
     {
         Vec3 vec = m_localRestPositions[i+1] - m_localRestPositions[i];
-        double norm = vec.norm();
+        SReal norm = vec.norm();
         tot += norm;
 
         this->rotateFrameForAlignX(input, vec, output);
@@ -728,7 +728,7 @@ template <class DataTypes>
 void WireRestShape<DataTypes>::getRestPosNonProcedural(Real& abs, Coord &p)
 {
     /*** find the range which includes the "requested" abs ***/
-    double startingAbs = 0; unsigned int index = 0;
+    SReal startingAbs = 0; unsigned int index = 0;
 
     while ((startingAbs < abs) && (index < m_localRestPositions.size()))
     {
@@ -795,7 +795,7 @@ void WireRestShape<DataTypes>::computeOrientation(const Vec3& AB, const Quat<Rea
         result = Q;
 
     Vec3 y;
-    double alpha;
+    SReal alpha;
 
     if (dot(x, PQ) < -0.9999999)
     {

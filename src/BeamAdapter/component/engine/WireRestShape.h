@@ -196,17 +196,17 @@ protected:
      vector<Vec3> 		m_localRestPositions;
      vector<Transform> 	m_localRestTransforms;
      vector<Real> 		m_curvAbs ;
-     double 							m_absOfGeometry {0};
+     Real 							m_absOfGeometry {0};
 
      struct BeamSection{
-        double _r; 			///>radius of the section
-        double _rInner; 	///>inner radius of the section if beam is hollow
-        double _Iy;
-        double _Iz; 		///>Iz is the cross-section moment of inertia (assuming mass ratio = 1) about the z axis;
-        double _J;  		///>Polar moment of inertia (J = Iy + Iz)
-        double _A; 			///> A is the cross-sectional area;
-        double _Asy; 		///>_Asy is the y-direction effective shear area =  10/9 (for solid circular section) or 0 for a non-Timoshenko beam
-        double _Asz; 		///>_Asz is the z-direction effective shear area;
+         Real _r; 			///>radius of the section
+         Real _rInner; 	///>inner radius of the section if beam is hollow
+         Real _Iy;
+         Real _Iz; 		///>Iz is the cross-section moment of inertia (assuming mass ratio = 1) about the z axis;
+         Real _J;  		///>Polar moment of inertia (J = Iy + Iz)
+         Real _A; 			///> A is the cross-sectional area;
+         Real _Asy; 		///>_Asy is the y-direction effective shear area =  10/9 (for solid circular section) or 0 for a non-Timoshenko beam
+         Real _Asz; 		///>_Asz is the z-direction effective shear area;
      };
      BeamSection beamSection1;
      BeamSection beamSection2;

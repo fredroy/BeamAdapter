@@ -180,7 +180,7 @@ public:
     /////////////////////////////////////
     /// Mass Interface
     /////////////////////////////////////
-    virtual void addMDx(const MechanicalParams* mparams, DataVecDeriv& f, const DataVecDeriv& dx, double factor) override;
+    virtual void addMDx(const MechanicalParams* mparams, DataVecDeriv& f, const DataVecDeriv& dx, SReal factor) override;
     virtual void addMToMatrix(const MechanicalParams *mparams, const MultiMatrixAccessor* matrix) override;
     virtual void addMBKToMatrix(const MechanicalParams* mparams, const MultiMatrixAccessor* matrix) override;
 
@@ -192,7 +192,7 @@ public:
     }
 
     //TODO(dmarchal 2017-05-17) So what do we do ? For who is this message intended for ? How can we make this code "more" manageable.
-    virtual double getKineticEnergy(const MechanicalParams* mparams, const DataVecDeriv& )  const ///< vMv/2 using dof->getV() override
+    virtual SReal getKineticEnergy(const MechanicalParams* mparams, const DataVecDeriv& )  const ///< vMv/2 using dof->getV() override
     {
         SOFA_UNUSED(mparams);
         msg_error() << "getKineticEnergy not yet implemented";
@@ -218,7 +218,7 @@ public:
                            DataVecDeriv&   datadF , const DataVecDeriv&   datadX ) override;
 
     //TODO(dmarchal 2017-05-17) So what do we do ? For who is this message intended for ? How can we make this code "more" manageable.
-    virtual double getPotentialEnergy(const MechanicalParams* mparams, const DataVecCoord& )const override
+    virtual SReal getPotentialEnergy(const MechanicalParams* mparams, const DataVecCoord& )const override
     {
         SOFA_UNUSED(mparams);
         msg_error()<<"getPotentialEnergy not yet implemented"; 
