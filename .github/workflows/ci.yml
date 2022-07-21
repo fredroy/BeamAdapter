@@ -22,7 +22,7 @@ jobs:
         with:
           sofa_root: ${{ github.workspace }}/sofa
           sofa_version: ${{ matrix.sofa_branch }}
-          sofa_scope: 'full'
+          sofa_scope: 'standard'
       - name: Checkout source code
         uses: actions/checkout@v2
         with:
@@ -118,9 +118,13 @@ jobs:
             # Get regression from github releases
             mkdir -p "${{ runner.temp }}/regression_tmp/install"
 <<<<<<< HEAD
+<<<<<<< HEAD
             # TODO: need to change the URL once the release are created on regression
             curl --output "${{ runner.temp }}/regression_tmp/${RUNNER_OS}.zip" -L https://github.com/fredroy/regression/releases/download/release-add_ga/Regression_test_add_ga_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${RUNNER_OS}.zip
 =======
+=======
+            # TODO: need to change the URL once the release are created on regression
+>>>>>>> 02fa3b5 (update)
             curl --output "${{ runner.temp }}/regression_tmp/${RUNNER_OS}.zip" -L https://github.com/fredroy/regression/releases/download/release-add_ga/Regression_test_add_ga_for-SOFA-master_${RUNNER_OS}.zip
 >>>>>>> 96e052c (Update GA to run regression tests (only for win and linux for now))
             unzip -qq "${{ runner.temp }}/regression_tmp/${RUNNER_OS}.zip" -d "${{ runner.temp }}/regression_tmp/install"
