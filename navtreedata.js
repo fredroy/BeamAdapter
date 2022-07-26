@@ -23,6 +23,7 @@ for the JavaScript code in this file
 var NAVTREE =
 [
   [ "BeamAdapter", "index.html", [
+    [ "Beam Adapter Documentation", "index.html", null ],
     [ "Todo List", "todo.html", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -54,7 +55,7 @@ var NAVTREEINDEX =
 "classsofa_1_1component_1_1constraintset_1_1_unbuilt_generic_constraint_problem.html#a5730960856e57f8ac00d7432f7bfd64c",
 "classsofa_1_1component_1_1fem_1_1__beaminterpolation___1_1_beam_interpolation.html#a2cd3a9121bffc66213bf9f056fad8ea9",
 "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_force_field_and_mass.html#a2e447123c2639c737be660e6a5f3e439",
-"namespacemembers.html"
+"index.html#autotoc_md2"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
