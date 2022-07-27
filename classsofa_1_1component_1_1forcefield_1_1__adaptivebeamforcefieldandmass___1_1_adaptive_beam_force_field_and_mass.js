@@ -36,7 +36,7 @@ var classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_
     [ "computeMass", "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_force_field_and_mass.html#a3e98b141d7aa180d1c1fa8a78c9849c8", null ],
     [ "computeStiffness", "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_force_field_and_mass.html#a9966751220bfdfe3d448b4922bb1ea6c", null ],
     [ "draw", "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_force_field_and_mass.html#a414cc78a2cf3cc3a17d08a66c413a999", null ],
-    [ "getKineticEnergy", "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_force_field_and_mass.html#a45f34c885c5c2b9a812c2f5b3ba513c6", null ],
+    [ "getKineticEnergy", "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_force_field_and_mass.html#a156ac616e735271faf0f215310788c64", null ],
     [ "getPotentialEnergy", "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_force_field_and_mass.html#ab7ad31969d8f5ddee2372bea33a1382b", null ],
     [ "init", "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_force_field_and_mass.html#ad72eef1561c7a53b19b048397d4ef570", null ],
     [ "isDiagonal", "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_force_field_and_mass.html#a4da75f71dd850c64e84e68524e08d512", null ],
