@@ -127,6 +127,11 @@ jobs:
             export REGRESSION_REFERENCES_DIR="${WORKSPACE_SRC_PATH}/regression/references"
             echo "REGRESSION_SCENES_DIR=${WORKSPACE_SRC_PATH}/examples" | tee -a $GITHUB_ENV
             echo "REGRESSION_REFERENCES_DIR=${WORKSPACE_SRC_PATH}/regression/references" | tee -a $GITHUB_ENV
+            ls ${WORKSPACE_SRC_PATH}
+            ls ${WORKSPACE_SRC_PATH}/examples
+            ls ${WORKSPACE_SRC_PATH}/regression
+            ls ${WORKSPACE_SRC_PATH}/regression/references
+
             # Run regression test bench
             ${SOFA_ROOT}/bin/Regression_test${{ steps.sofa.outputs.exe }}
           else
