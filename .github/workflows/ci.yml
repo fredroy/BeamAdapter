@@ -127,8 +127,12 @@ jobs:
             export REGRESSION_REFERENCES_DIR="${WORKSPACE_SRC_PATH}/regression/references"
             echo "REGRESSION_SCENES_DIR=${WORKSPACE_SRC_PATH}/examples" | tee -a $GITHUB_ENV
             echo "REGRESSION_REFERENCES_DIR=${WORKSPACE_SRC_PATH}/regression/references" | tee -a $GITHUB_ENV
+            echo ${REGRESSION_SCENES_DIR}
+            ls ${REGRESSION_SCENES_DIR}
+            echo ${REGRESSION_REFERENCES_DIR}
+            ls ${REGRESSION_REFERENCES_DIR}
             # Run regression test bench
-            REGRESSION_SCENES_DIR="${WORKSPACE_SRC_PATH}/examples" REGRESSION_REFERENCES_DIR="${WORKSPACE_SRC_PATH}/regression/references" ${SOFA_ROOT}/bin/Regression_test${{ steps.sofa.outputs.exe }}
+            ${SOFA_ROOT}/bin/Regression_test${{ steps.sofa.outputs.exe }}
           else
             echo "Regression tests are not supported on the CI for macOS yet (TODO)"
           fi
