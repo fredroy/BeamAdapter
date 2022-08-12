@@ -10,6 +10,11 @@ var hierarchy =
       [ "AdaptiveBeamContactMapper< TCollisionModel, DataTypes >", "classsofa_1_1component_1_1collision_1_1_adaptive_beam_contact_mapper.html", null ],
       [ "MultiAdaptiveBeamContactMapper< TCollisionModel, DataTypes >", "classsofa_1_1component_1_1collision_1_1_multi_adaptive_beam_contact_mapper.html", null ]
     ] ],
+    [ "BaseObject", null, [
+      [ "BeamInterpolation< DataTypes >", "classsofa_1_1component_1_1fem_1_1__beaminterpolation___1_1_beam_interpolation.html", [
+        [ "WireBeamInterpolation< DataTypes >", "classsofa_1_1component_1_1fem_1_1__wirebeaminterpolation___1_1_wire_beam_interpolation.html", null ]
+      ] ]
+    ] ],
     [ "AdaptiveBeamForceFieldAndMass< DataTypes >::BeamLocalMatrices", "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_forcab7fe5ba476da6d212613576bd99dc87.html", null ],
     [ "AdaptiveInflatableBeamForceField< DataTypes >::BeamLocalMatrices", "classsofa_1_1component_1_1forcefield_1_1___adaptive_inflatable_beam_force_field___1_1_adaptive_ia5c9c0085fb1a64db4499a843dafea79.html", null ],
     [ "BeamSection", "structsofa_1_1beamadapter_1_1_beam_section.html", null ],
@@ -32,6 +37,9 @@ var hierarchy =
     [ "Mapping", null, [
       [ "MultiAdaptiveBeamMapping< TIn, TOut >", "classsofa_1_1component_1_1mapping_1_1_multi_adaptive_beam_mapping.html", null ]
     ] ],
+    [ "Mass", null, [
+      [ "AdaptiveBeamForceFieldAndMass< DataTypes >", "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_force_field_and_mass.html", null ]
+    ] ],
     [ "MechanicalStateController", null, [
       [ "AdaptiveBeamController< DataTypes >", "classsofa_1_1component_1_1controller_1_1__adaptivebeamcontroller___1_1_adaptive_beam_controller.html", null ],
       [ "InterventionalRadiologyController< DataTypes >", "classsofa_1_1component_1_1controller_1_1__interventionalradiologycontroller___1_1_interventional_radiology_controller.html", null ],
@@ -45,9 +53,6 @@ var hierarchy =
     [ "BaseObject", null, [
       [ "DeprecatedComponent", "classsofa_1_1component_1_1_deprecated_component.html", [
         [ "AdaptiveBeamConstraint", "class_adaptive_beam_constraint.html", null ]
-      ] ],
-      [ "BeamInterpolation< DataTypes >", "classsofa_1_1component_1_1fem_1_1__beaminterpolation___1_1_beam_interpolation.html", [
-        [ "WireBeamInterpolation< DataTypes >", "classsofa_1_1component_1_1fem_1_1__wirebeaminterpolation___1_1_wire_beam_interpolation.html", null ]
       ] ]
     ] ],
     [ "Constraint", null, [
@@ -62,7 +67,6 @@ var hierarchy =
       [ "BeamLengthMapping< TIn, TOut >", "classsofa_1_1component_1_1mapping_1_1__beamlengthmapping___1_1_beam_length_mapping.html", null ]
     ] ],
     [ "Mass", null, [
-      [ "AdaptiveBeamForceFieldAndMass< DataTypes >", "classsofa_1_1component_1_1forcefield_1_1__adaptivebeamforcefieldandmass___1_1_adaptive_beam_force_field_and_mass.html", null ],
       [ "AdaptiveInflatableBeamForceField< DataTypes >", "classsofa_1_1component_1_1forcefield_1_1___adaptive_inflatable_beam_force_field___1_1_adaptive_inflatable_beam_force_field.html", null ]
     ] ],
     [ "PairInteractionConstraint", null, [
