@@ -198,11 +198,9 @@ void WireRestShape<DataTypes>::init()
 
     initTopology();
 
-    
     this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Valid);
     msg_info() << "WireRestShape end init";    
 }
-
 
 template <class DataTypes>
 bool WireRestShape<DataTypes>::initLengths()
