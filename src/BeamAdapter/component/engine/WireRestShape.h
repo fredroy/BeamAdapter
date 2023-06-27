@@ -39,7 +39,6 @@
 #include <sofa/defaulttype/SolidTypes.h>
 #include <sofa/core/objectmodel/BaseObject.h>
 #include <sofa/component/topology/container/dynamic/EdgeSetTopologyModifier.h>
-#include <sofa/component/topology/mapping/Edge2QuadTopologicalMapping.h>
 #include <sofa/core/loader/MeshLoader.h>
 
 namespace sofa::component::engine
@@ -50,7 +49,6 @@ namespace _wirerestshape_
 
 using sofa::core::topology::TopologyContainer;
 using sofa::component::topology::container::dynamic::EdgeSetTopologyModifier;
-using sofa::component::topology::mapping::Edge2QuadTopologicalMapping;
 using sofa::core::loader::MeshLoader;
 
 using namespace sofa::beamadapter;
