@@ -108,8 +108,8 @@ public:
      void getInterpolationParam(const Real& x_curv, Real &_rho, Real &_A, Real &_Iy , Real &_Iz, Real &_Asy, Real &_Asz, Real &_J) const;
 
      /**
-      * This function provides a type::vector with the curviliar abscissa of the noticeable point(s)
-      * and the minimum density (number of points) between them
+      * This function provides a type::vector with the curviliar abscissa of the noticeable point(s) 
+      * and the minimum density (number of points) between them. (Nb. nbP_density.size() == xP_noticeable.size() - 1)
       */
      void getSamplingParameters(type::vector<Real>& xP_noticeable, type::vector<int>& nbP_density) const ;
 
@@ -121,6 +121,7 @@ public:
      void initFromLoader();
      bool checkTopology();
 
+     [[nodiscard]] bool fillTopology();
      Real getLength() ;
      void getCollisionSampling(Real &dx, const Real &x_curv) ;
      void getNumberOfCollisionSegment(Real &dx, unsigned int &numLines) ;

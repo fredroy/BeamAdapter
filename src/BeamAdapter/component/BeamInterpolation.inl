@@ -51,29 +51,47 @@ using sofa::helper::ReadAccessor ;
 
 /////////////////////////// TOOL /////////////////////////////////////////////////////////////////
 template <class DataTypes>
-void BeamInterpolation<DataTypes>::RotateFrameForAlignX(const Quat &input, Vec3 &x, Quat &output)
+void BeamInterpolation<DataTypes>::RotateFrameForAlignX(const Quat& input, Vec3& x, Quat& output)
 {
     x.normalize();
-    Vec3 x0=input.inverseRotate(x);
+    return RotateFrameForAlignNormalizedX(input, x, output);
+}
 
-    Real cTheta=x0[0];
-    Real theta;
-    if (cTheta>0.9999999999)
+template <class DataTypes>
+void BeamInterpolation<DataTypes>::RotateFrameForAlignNormalizedX(const Quat& input, const Vec3& x, Quat& output)
+{
+    const Vec3 x0 = input.inverseRotate(x);
+
+    const Real cTheta = x0[0];
+    if (cTheta > 0.9999999999)
     {
         output = input;
     }
     else
     {
-        theta=acos(cTheta);
         // axis of rotation
-        Vec3 dw(0,-x0[2],x0[1]);
+        Vec3 dw(0, -x0[2], x0[1]);
         dw.normalize();
 
-        // computation of the rotation
-        Quat inputRoutput;
-        inputRoutput.axisToQuat(dw, theta);
+        // optimized axisToQuat with no normalization, using already computed cos(Theta) and x being 0
+        constexpr auto optimAxisToQuat = [](const Vec3& v, Real cosTheta)
+        {
+            Quat q(type::QNOINIT);
 
-        output=input*inputRoutput;
+            const auto sp = std::sqrt(static_cast<Real>(0.5) * (static_cast<Real>(1) - cosTheta)); //sin(phi/2) = sqrt(0.5*(1+cos(phi)))
+            const auto cp = std::sqrt(static_cast<Real>(0.5) * (static_cast<Real>(1) + cosTheta)); //cos(phi/2) = sqrt(0.5*(1-cos(phi)))
+            q[0] = static_cast<Real>(0.0);
+            q[1] = v.y() * sp;
+            q[2] = v.z() * sp;
+            q[3] = cp;
+
+            return q;
+        };
+
+        // computation of the rotation
+        const Quat inputRoutput = optimAxisToQuat(dw, cTheta);
+
+        output = input * inputRoutput;
     }
 }
 
@@ -81,7 +99,7 @@ void BeamInterpolation<DataTypes>::RotateFrameForAlignX(const Quat &input, Vec3 
 template <class DataTypes>
 BeamInterpolation<DataTypes>::BeamInterpolation() :
     crossSectionShape(initData(&crossSectionShape,
-                               OptionsGroup(3,"circular","elliptic (not available)","rectangular"),
+                               {"circular","elliptic (not available)","rectangular"},
                                "crossSectionShape",
                                "shape of the cross-section. Can be: circular, elliptic, square, rectangular. Default is circular" ))
   , d_radius(initData(&d_radius, Real(1.0), "radius", "radius of the beam (if circular cross-section is considered)"))
@@ -109,7 +127,7 @@ BeamInterpolation<DataTypes>::BeamInterpolation() :
                                   "Optional rigid transformation between the degree of Freedom and the second node of the beam"))
   , d_curvAbsList(initData(&d_curvAbsList, "curvAbsList", ""))
   , d_beamCollision(initData(&d_beamCollision, "beamCollision", "list of beam (in edgeList) that needs to be considered for collision"))
-  , d_vecID(initData(&d_vecID, OptionsGroup(3,"current","free","rest" ), "vecID",
+  , d_vecID(initData(&d_vecID, {"current","free","rest"}, "vecID",
                      "input pos and vel (current, free pos/vel, rest pos)" ))
   , d_InterpolationInputs(initData(&d_InterpolationInputs, "InterpolationInputs", "vector containing (beamID, baryCoord)"))
   , d_InterpolatedPos(initData(&d_InterpolatedPos, "InterpolatedPos", "output Interpolated Position"))
@@ -1244,21 +1262,22 @@ void BeamInterpolation<DataTypes>::InterpolateTransformUsingSpline(Transform& gl
 
         /// the tangent is computed by derivating the spline
         Vec3 n_x = P0 * (-3 * invBx2) + P1 * (3 - 12 * baryCoord + 9 * bx2) + P2 * (6 * baryCoord - 9 * bx2) + P3 * (3 * bx2);
+        n_x.normalize();
 
         /// try to interpolate the "orientation" (especially the torsion) the best possible way...
         /// (but other ways should exit...)
         Quat R0, R1, Rslerp;
 
         ///      1. The frame at each node of the beam are rotated to align x along n_x
-        RotateFrameForAlignX(global_H_local0.getOrientation(), n_x, R0);
-        RotateFrameForAlignX(global_H_local1.getOrientation(), n_x, R1);
+        RotateFrameForAlignNormalizedX(global_H_local0.getOrientation(), n_x, R0);
+        RotateFrameForAlignNormalizedX(global_H_local1.getOrientation(), n_x, R1);
 
         ///     2. We use the "slerp" interpolation to find a solution "in between" these 2 solution R0, R1
         Rslerp.slerp(R0,R1, (float)baryCoord,true);
         Rslerp.normalize();
 
         ///     3. The result is not necessarily alligned with n_x, so we re-aligned Rslerp to obtain a quatResult.
-        RotateFrameForAlignX(Rslerp, n_x,quatResult);
+        RotateFrameForAlignNormalizedX(Rslerp, n_x,quatResult);
     }
 
     global_H_localResult.set(posResult, quatResult);

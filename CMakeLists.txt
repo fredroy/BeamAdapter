@@ -5,7 +5,6 @@ include(cmake/environment.cmake)
 
 find_package(Sofa.Simulation.Core REQUIRED)
 
-sofa_find_package(Sofa.GL REQUIRED)
 sofa_find_package(Sofa.Component.StateContainer REQUIRED)
 sofa_find_package(Sofa.Component.Controller REQUIRED)
 sofa_find_package(Sofa.Component.Topology.Container.Dynamic REQUIRED)
@@ -35,6 +34,8 @@ set(HEADER_FILES
 
     ${BEAMADAPTER_SRC}/component/controller/AdaptiveBeamController.h
     ${BEAMADAPTER_SRC}/component/controller/AdaptiveBeamController.inl
+    ${BEAMADAPTER_SRC}/component/controller/BeamAdapterActionController.h
+    ${BEAMADAPTER_SRC}/component/controller/BeamAdapterActionController.inl    
     ${BEAMADAPTER_SRC}/component/controller/InterventionalRadiologyController.h
     ${BEAMADAPTER_SRC}/component/controller/InterventionalRadiologyController.inl
     ${BEAMADAPTER_SRC}/component/controller/SutureController.h
@@ -52,12 +53,15 @@ set(HEADER_FILES
 
     ${BEAMADAPTER_SRC}/component/mapping/AdaptiveBeamMapping.h
     ${BEAMADAPTER_SRC}/component/mapping/AdaptiveBeamMapping.inl
+    ${BEAMADAPTER_SRC}/component/mapping/BeamLengthMapping.h
+    ${BEAMADAPTER_SRC}/component/mapping/BeamLengthMapping.inl
     ${BEAMADAPTER_SRC}/component/mapping/MultiAdaptiveBeamMapping.h
     ${BEAMADAPTER_SRC}/component/mapping/MultiAdaptiveBeamMapping.inl
 	
 	${BEAMADAPTER_SRC}/component/model/WireSectionMaterial.h
 	
     ${BEAMADAPTER_SRC}/utils/BeamSection.h
+    ${BEAMADAPTER_SRC}/utils/BeamActions.h
     ${BEAMADAPTER_SRC}/utils/deprecatedcomponent.h
     )
 
@@ -71,6 +75,7 @@ set(SOURCE_FILES
     ${BEAMADAPTER_SRC}/component/constraint/AdaptiveBeamLengthConstraint.cpp
 
     ${BEAMADAPTER_SRC}/component/controller/AdaptiveBeamController.cpp
+    ${BEAMADAPTER_SRC}/component/controller/BeamAdapterActionController.cpp
     ${BEAMADAPTER_SRC}/component/controller/InterventionalRadiologyController.cpp
     ${BEAMADAPTER_SRC}/component/controller/SutureController.cpp
 
@@ -81,6 +86,7 @@ set(SOURCE_FILES
     ${BEAMADAPTER_SRC}/component/forcefield/AdaptiveInflatableBeamForceField.cpp
 
     ${BEAMADAPTER_SRC}/component/mapping/AdaptiveBeamMapping.cpp
+    ${BEAMADAPTER_SRC}/component/mapping/BeamLengthMapping.cpp
     ${BEAMADAPTER_SRC}/component/mapping/MultiAdaptiveBeamMapping.cpp
 	
 	${BEAMADAPTER_SRC}/component/model/WireSectionMaterial.cpp
@@ -129,7 +135,7 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Simulation.Core Sofa.GL)
+target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Simulation.Core)
 target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Component.StateContainer Sofa.Component.Controller Sofa.Component.Topology.Container.Dynamic Sofa.Component.Topology.Mapping)
 target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Component.Collision.Geometry Sofa.Component.Constraint.Lagrangian Sofa.Component.Constraint.Projective)
 

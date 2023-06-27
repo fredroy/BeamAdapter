@@ -48,7 +48,7 @@ namespace _adaptivebeamforcefieldandmass_
 /* ************* ADAPTIVE FORCEFIELD_AND_MASS ************** */
 using sofa::core::behavior::ForceField ;
 using sofa::core::objectmodel::BaseContext ;
-using sofa::type::Vector3 ;
+using sofa::type::Vec3 ;
 using sofa::type::Quat ;
 using sofa::helper::ReadAccessor ;
 using sofa::core::ConstVecCoordId ;
@@ -111,7 +111,7 @@ void AdaptiveBeamForceFieldAndMass<DataTypes>::computeStiffness(int beamId, Beam
 
     /// material parameters
     Real _G = _E / (2.0 * (1.0 + _nu));
-    
+
     Real phiy, phiz;
     Real L2 = (Real) (beamLocalMatrices._L * beamLocalMatrices._L);
     Real L3 = (Real) (L2 * beamLocalMatrices._L);
@@ -232,7 +232,7 @@ void AdaptiveBeamForceFieldAndMass<DataTypes>::computeMass(int beamId, BeamLocal
 template<class DataTypes>
 void AdaptiveBeamForceFieldAndMass<DataTypes>::applyStiffnessLarge( VecDeriv& df, const VecDeriv& dx,
                                                                     int bIndex, Index nd0Id, Index nd1Id,
-                                                                    const double &factor )
+                                                                    SReal factor )
 {
     if(nd0Id==nd1Id) /// Return in case of rigidification
         return;
@@ -268,7 +268,7 @@ void AdaptiveBeamForceFieldAndMass<DataTypes>::applyStiffnessLarge( VecDeriv& df
 
 
 template<class DataTypes>
-void AdaptiveBeamForceFieldAndMass<DataTypes>::applyMassLarge( VecDeriv& df, int bIndex, Index nd0Id, Index nd1Id, const double &factor)
+void AdaptiveBeamForceFieldAndMass<DataTypes>::applyMassLarge( VecDeriv& df, int bIndex, Index nd0Id, Index nd1Id, SReal factor)
 {
     const BeamLocalMatrices &beamLocalMatrix = m_localBeamMatrices[bIndex];
 
@@ -299,7 +299,7 @@ void AdaptiveBeamForceFieldAndMass<DataTypes>::applyMassLarge( VecDeriv& df, int
 /////////////////////////////////////
 
 template<class DataTypes>
-void AdaptiveBeamForceFieldAndMass<DataTypes>::addMDx(const MechanicalParams* mparams , DataVecDeriv& dataf, const DataVecDeriv& datadx, double factor)
+void AdaptiveBeamForceFieldAndMass<DataTypes>::addMDx(const MechanicalParams* mparams , DataVecDeriv& dataf, const DataVecDeriv& datadx, SReal factor)
 {
     SOFA_UNUSED(mparams);
     SOFA_UNUSED(datadx);
@@ -717,7 +717,7 @@ void AdaptiveBeamForceFieldAndMass<DataTypes>::draw(const VisualParams *vparams)
         if(vparams->displayFlags().getShowForceFields())
         {
             // /  test ///
-            type::vector<Vector3> points;
+            type::vector<type::Vec3> points;
             Vec3 pos = globalH0Local.getOrigin();
             for (double i=0.0; i<1.00001; i+=0.02)
             {

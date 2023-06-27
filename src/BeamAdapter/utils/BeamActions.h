@@ -19,62 +19,50 @@
 *                                                                             *
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
-//
-// C++ Implementation : BeamLengthMapping
-//
-// Description:
-//
-//
-// Author: Christian Duriez, INRIA
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
+#pragma once
 
-//////////////////////// Inclusion of headers...from wider to narrower/closer //////////////////////
-#define BEAMADAPTER_BEAMLENGTHMAPPING_CPP
-#include <sofa/core/behavior/MechanicalState.h>
-#include <sofa/core/ObjectFactory.h>
-
-#include <BeamAdapter/component/mapping/BeamLengthMapping.inl>
-
-namespace sofa
+namespace sofa::beamadapter
 {
+    
+    /// \brief Enum class listing all possible actions during Beam navigation
+    enum class BeamAdapterAction
+    {
+        NO_ACTION = 0,
+        MOVE_FORWARD,
+        MOVE_BACKWARD,
+        SPIN_RIGHT,
+        SPIN_LEFT,
+        SWITCH_NEXT_TOOL,
+        SWITCH_PREVIOUS_TOOL,
+        DROP_TOOL,
+        USE_TOOL_0,
+        USE_TOOL_1,
+        USE_TOOL_2,
+    };
 
-namespace component
-{
+    /// \brief map of action as string keyword instead of int for better clarity in scene scripting
+    const static std::map<std::string, BeamAdapterAction> beamActionNames = {
+        {"stop", BeamAdapterAction::NO_ACTION},
+        {"fwd", BeamAdapterAction::MOVE_FORWARD},
+        {"bwd", BeamAdapterAction::MOVE_BACKWARD},
+        {"right", BeamAdapterAction::SPIN_RIGHT},
+        {"nextT", BeamAdapterAction::SWITCH_NEXT_TOOL},
+        {"prevT", BeamAdapterAction::SWITCH_PREVIOUS_TOOL},
+        {"dropT", BeamAdapterAction::DROP_TOOL},
+        {"tool0", BeamAdapterAction::USE_TOOL_0},
+        {"tool1", BeamAdapterAction::USE_TOOL_1},
+        {"tool2", BeamAdapterAction::USE_TOOL_2}
+    };
 
-namespace mapping
-{
+    /// static method to convert an action as string into enum class using @sa beamActionNames
+    static BeamAdapterAction convertBeamAdapterAction(const std::string& sAction)
+    {
+        auto bAction = beamActionNames.find(sAction);
 
-//using namespace defaulttype;
-using namespace core;
-using namespace core::behavior;
-using namespace sofa::defaulttype;
+        if (bAction != beamActionNames.end())
+            return bAction->second;
+        else
+            return BeamAdapterAction::NO_ACTION;
+    }
 
-
-/////////////////////////////////////////// FACTORY ////////////////////////////////////////////////
-///
-/// Register the component into the sofa factory.
-/// For more details:
-/// https://www.sofa-framework.org/community/doc/programming-with-sofa/components-api/the-objectfactory/
-///
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//SOFA_DECL_CLASS(BeamLengthMapping)
-
-// Register in the Factory
-int BeamLengthMappingClass = core::RegisterObject("computes the lengths of the beams")
-        .add< BeamLengthMapping<Rigid3Types, Vec1dTypes   > >(true) //default template
-        //.add< BeamLengthMapping<Rigid3Types, Rigid3Types > >()
-;
-
-namespace _beamlengthmapping_
-{
-    template class SOFA_BEAMADAPTER_API BeamLengthMapping<Rigid3dTypes, Vec1dTypes   >;
-}
-
-} // namespace mapping
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::beamAdapter

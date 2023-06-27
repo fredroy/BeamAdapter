@@ -19,62 +19,22 @@
 *                                                                             *
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
-//
-// C++ Implementation : BeamLengthMapping
-//
-// Description:
-//
-//
-// Author: Christian Duriez, INRIA
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
+#define SOFA_PLUGIN_BEAMADAPTER_ACTIONCONTROLLER_CPP
 
-//////////////////////// Inclusion of headers...from wider to narrower/closer //////////////////////
-#define BEAMADAPTER_BEAMLENGTHMAPPING_CPP
-#include <sofa/core/behavior/MechanicalState.h>
 #include <sofa/core/ObjectFactory.h>
+#include <sofa/defaulttype/VecTypes.h>
+#include <sofa/defaulttype/RigidTypes.h>
 
-#include <BeamAdapter/component/mapping/BeamLengthMapping.inl>
+#include <BeamAdapter/config.h>
+#include <BeamAdapter/component/controller/BeamAdapterActionController.inl>
 
-namespace sofa
+namespace sofa::component::controller
 {
 
-namespace component
-{
+const static int BeamAdapterActionControllerClass = core::RegisterObject("BeamAdapterActionController")
+    .add< BeamAdapterActionController<sofa::defaulttype::Rigid3Types> >()
+    ;
 
-namespace mapping
-{
+template class SOFA_BEAMADAPTER_API BeamAdapterActionController<sofa::defaulttype::Rigid3Types>;
 
-//using namespace defaulttype;
-using namespace core;
-using namespace core::behavior;
-using namespace sofa::defaulttype;
-
-
-/////////////////////////////////////////// FACTORY ////////////////////////////////////////////////
-///
-/// Register the component into the sofa factory.
-/// For more details:
-/// https://www.sofa-framework.org/community/doc/programming-with-sofa/components-api/the-objectfactory/
-///
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//SOFA_DECL_CLASS(BeamLengthMapping)
-
-// Register in the Factory
-int BeamLengthMappingClass = core::RegisterObject("computes the lengths of the beams")
-        .add< BeamLengthMapping<Rigid3Types, Vec1dTypes   > >(true) //default template
-        //.add< BeamLengthMapping<Rigid3Types, Rigid3Types > >()
-;
-
-namespace _beamlengthmapping_
-{
-    template class SOFA_BEAMADAPTER_API BeamLengthMapping<Rigid3dTypes, Vec1dTypes   >;
-}
-
-} // namespace mapping
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::controller
