@@ -161,7 +161,7 @@ private:
      type::vector<Vec3> 		m_localRestPositions;
      type::vector<Transform> 	m_localRestTransforms;
      type::vector<Real> 		m_curvAbs ;
-     double 							m_absOfGeometry {0};
+     double 					m_absOfGeometry {0};
      
      /// Link to be set to the topology container in the component graph.
      SingleLink<WireRestShape<DataTypes>, TopologyContainer, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK> l_topology;     
@@ -169,11 +169,6 @@ private:
      TopologyContainer* _topology{ nullptr }; 
      /// Pointer to the topology modifier. Will be set at init by searching one in @sa _topology context.
      EdgeSetTopologyModifier* edgeMod{ nullptr };
-
-     /// Link to be set to the topology container in the component graph.
-     SingleLink<WireRestShape<DataTypes>, MeshLoader, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK> l_loader;     
-     /// Pointer to the MeshLoader, should be set using @sa l_loader, otherwise will search for one in current Node.
-     MeshLoader* loader{ nullptr };
 };
 
 
