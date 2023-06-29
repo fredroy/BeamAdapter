@@ -85,10 +85,7 @@ public:
      virtual ~WireRestShape() = default;
 
      /////////////////////////// Inherited from BaseObject //////////////////////////////////////////
-     void parse(core::objectmodel::BaseObjectDescription* arg) override;
      void init() override ;
-
-     void draw(const core::visual::VisualParams * vparams) override ;
 
 
      /////////////////////////// Methods of WireRestShape  //////////////////////////////////////////
@@ -116,8 +113,6 @@ public:
 
 
      /// Functions enabling to load and use a geometry given from OBJ external file
-     void initRestConfig();
-     void getRestPosNonProcedural(Real& abs, Coord &p);
      void computeOrientation(const Vec3& AB, const Quat& Q, Quat &result);     
      
 
@@ -128,11 +123,7 @@ public:
 
      void releaseWirePart() {
          msg_warning() << "Releasing catheter or brokenIn2 mode is not anymore supported. Feature has been removed after release v23.06";
-     }
-
-     void rotateFrameForAlignX(const Quat &input, Vec3 &x, Quat &output);
-
-     void getRodSectionMaterial(const Real& x_curv);
+     }     
 
 protected:
     /// Internal method to init Lengths vector @sa d_keyPoints if not set using @sa d_length and @sa d_straightLength. Returns false if init can't be performed.
@@ -142,13 +133,6 @@ protected:
 
 
 public:
-     /// Analitical creation of wire shape...
-     Data<bool> d_isAProceduralShape;
-     Data<Real> d_nonProceduralScale;
-     Data<Real> d_length;
-     Data<Real> d_straightLength;
-     Data<Real> d_spireDiameter;
-     Data<Real> d_spireHeight;
      Data<type::vector<int> > d_density;
      Data<type::vector<Real> > d_keyPoints;
 
@@ -158,13 +142,7 @@ public:
      /// Vector or links to the Wire section material. The order of the linked material will define the WireShape structure.
      MultiLink<WireRestShape<DataTypes>, BaseRodSectionMaterial<DataTypes>, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK> l_sectionMaterials;
 
-private:
-     /// Data required for the File loading
-     type::vector<Vec3> 		m_localRestPositions;
-     type::vector<Transform> 	m_localRestTransforms;
-     type::vector<Real> 		m_curvAbs ;
-     double 					m_absOfGeometry {0};
-     
+private:    
      /// Link to be set to the topology container in the component graph.
      SingleLink<WireRestShape<DataTypes>, TopologyContainer, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK> l_topology;     
      /// Pointer to the topology container, should be set using @sa l_topology, otherwise will search for one in current Node.

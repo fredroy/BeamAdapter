@@ -56,71 +56,16 @@ using sofa::core::objectmodel::BaseContext ;
  * @brief Default Constructor.
  */
 template <class DataTypes>
-WireRestShape<DataTypes>::WireRestShape() :
-    //TODO(dmarchal 2017-05-17) not sure that procedural & nonProceduralScale are very understandable name...are they exclusives ?
-    //if so have look in my comment in the init section.
-    d_isAProceduralShape( initData(&d_isAProceduralShape,(bool)true,"isAProceduralShape","is the guidewire shape mathemetically defined ?") )
-  , d_nonProceduralScale( initData ( &d_nonProceduralScale, (Real)1.0, "nonProceduralScale", "scale of the model defined by file" ) )
-  , d_length(initData(&d_length, (Real)1.0, "length", "total length of the wire instrument"))
-  , d_straightLength(initData(&d_straightLength, (Real)0.0, "straightLength", "length of the initial straight shape"))
-  , d_spireDiameter(initData(&d_spireDiameter, (Real)0.1, "spireDiameter", "diameter of the spire"))
-  , d_spireHeight(initData(&d_spireHeight, (Real)0.01, "spireHeight", "height between each spire"))
-  , d_density(initData(&d_density, "densityOfBeams", "density of beams between key points"))
-  , d_keyPoints(initData(&d_keyPoints,"keyPoints","key points of the shape (curv absc)"))
-  , d_drawRestShape(initData(&d_drawRestShape, (bool)false, "draw", "draw rest shape"))
-  , l_sectionMaterials(initLink("wireMaterials", "link to Wire Section Materials (to be ordered according to the instrument, from handle to tip)"))
-  , l_topology(initLink("topology", "link to the topology container"))
+WireRestShape<DataTypes>::WireRestShape()
+    : d_density(initData(&d_density, "densityOfBeams", "density of beams between key points"))
+    , d_keyPoints(initData(&d_keyPoints,"keyPoints","key points of the shape (curv absc)"))
+    , d_drawRestShape(initData(&d_drawRestShape, (bool)false, "draw", "draw rest shape"))
+    , l_sectionMaterials(initLink("wireMaterials", "link to Wire Section Materials (to be ordered according to the instrument, from handle to tip)"))
+    , l_topology(initLink("topology", "link to the topology container"))
 {
-    d_spireDiameter.setGroup("Procedural");
-    d_spireHeight.setGroup("Procedural");
+
 }
 
-template <class DataTypes>
-void WireRestShape<DataTypes>::rotateFrameForAlignX(const Quat &input, Vec3 &x, Quat &output)
-{
-    x.normalize();
-    Vec3 x0=input.inverseRotate(x);
-
-    Real cTheta=x0[0];
-    Real theta;
-    if (cTheta>(1-EPSILON))
-    {
-        output = input;
-    }
-    else
-    {
-        theta=acos(cTheta);
-        // axis of rotation
-        Vec3 dw(0,-x0[2],x0[1]);
-        dw.normalize();
-
-        // computation of the rotation
-        Quat inputRoutput;
-        inputRoutput.axisToQuat(dw, theta);
-
-        output=input*inputRoutput;
-    }
-}
-
-template<class DataTypes>
-void WireRestShape<DataTypes>::parse(core::objectmodel::BaseObjectDescription* args)
-{
-    const char* arg = args->getAttribute("procedural") ;
-    if(arg)
-    {
-        msg_warning() << "The attribute 'procedural' has been renamed into 'isAProceduralShape'. " << msgendl
-                   << "To remove this warning you need to update your scene and replace 'procedural' with 'isAProceduralShape'" ;
-
-        /// As arg is owned by the "procedural" attribute it cannot be removed before
-        /// being copied in the "isAProceduralShape". So please keep the ordering of the
-        /// two following functions.
-        args->setAttribute("isAProceduralShape", arg) ;
-        args->removeAttribute("procedural") ;
-
-    }
-
-    Inherit1::parse(args) ;
-}
 
 template<class DataTypes>
 void WireRestShape<DataTypes>::init()
@@ -187,34 +132,16 @@ bool WireRestShape<DataTypes>::initLengths()
     auto keyPointList = sofa::helper::getWriteOnlyAccessor(d_keyPoints);
     auto densityList = sofa::helper::getWriteOnlyAccessor(d_density);
 
-    // In case use used length and straightLenght instead of keyPointList, create keyPointList
-    if (keyPointList.empty())
-    {
-        keyPointList.push_back(0.0);
-        if (d_straightLength.getValue() >= 0.001 * this->d_length.getValue() && d_straightLength.getValue() <= 0.999 * d_length.getValue())
-            keyPointList.push_back(d_straightLength.getValue());
-        keyPointList.push_back(d_length.getValue());
-    }
+    keyPointList.resize(l_sectionMaterials.size() + 1);
+    keyPointList[0] = Real(0.0);
 
-    // checking sizes between keypointList and number of input material
-    if (l_sectionMaterials.size() != keyPointList.size() - 1)
+    densityList.resize(l_sectionMaterials.size());
+    
+    for (unsigned int i = 0; i < l_sectionMaterials.size(); ++i)
     {
-        msg_error() << "Wrong number of inputs. Component can't be init. Number of input materials: " << l_sectionMaterials.size() << ", should be equal to keyPointList.size()-1. keyPointList.size() is equal to: " << keyPointList.size();
-        return false;
-    }
-
-    if (densityList.size() != keyPointList.size() - 1)
-    {
-        msg_warning() << "Wrong number of densityOfBeams. Given: " << densityList.size() << ", should be equal to keyPointList.size()-1: '" << keyPointList.size() 
-            << "'. densityOfBeams will be recomputed using Wire material number of collision edges.";
-        densityList.clear();
-
-        for (unsigned int i = 0; i < keyPointList.size() - 1; ++i)
-        {
-            auto mat = l_sectionMaterials.get(i);
-            int nbrCollEdges = mat->getNbCollisionEdges();
-            densityList.push_back(nbrCollEdges);
-        }
+        auto rodSection = l_sectionMaterials.get(i);
+        keyPointList[i+1] = keyPointList[i] + rodSection->getLength();
+        densityList[i] = rodSection->getNbCollisionEdges();
     }
 
     return true;
@@ -272,16 +199,20 @@ void WireRestShape<DataTypes>::getSamplingParameters(type::vector<Real>& xP_noti
     nbP_density = d_density.getValue();
 }
 
+
 template <class DataTypes>
 void WireRestShape<DataTypes>::getCollisionSampling(Real &dx, const Real &x_curv)
 {
     unsigned int numLines;
     Real x_used = x_curv - EPSILON;
-    if(x_used>d_length.getValue())
-        x_used=d_length.getValue();
 
-    if(x_used<0.0)
-        x_used=0.0;
+    const Real totalLength = this->getLength();
+    if (x_used > totalLength) {
+        x_used = totalLength;
+    }
+    else if (x_used < 0.0) {
+        x_used = 0.0;
+    }
 
     const type::vector<Real>& keyPts = d_keyPoints.getValue();
     
@@ -292,7 +223,7 @@ void WireRestShape<DataTypes>::getCollisionSampling(Real &dx, const Real &x_curv
                     << " !=  size of keyPoints-1 " << keyPts.size()-1 
                     << ". Returning default values.";
         numLines = 20;
-        dx = d_length.getValue() / numLines;
+        dx = totalLength / numLines;
         return;
     }
     
@@ -311,7 +242,7 @@ void WireRestShape<DataTypes>::getCollisionSampling(Real &dx, const Real &x_curv
 
     // If x_used is out of bounds. Warn user and returns default value.
     numLines = 20;
-    dx = d_length.getValue() / numLines;
+    dx = totalLength / numLines;
     msg_error() << " problem is  getCollisionSampling : x_curv " << x_used << " is not between keyPoints" << d_keyPoints.getValue();
 }
 
@@ -321,59 +252,24 @@ void WireRestShape<DataTypes>::getRestTransformOnX(Transform &global_H_local, co
 {
     Real x_used = x - EPSILON;
 
-    if(x_used>d_length.getValue())
-        x_used=d_length.getValue();
-
-    if(x_used<0.0)
-        x_used=0.0;
-
-    if( x_used < d_straightLength.getValue())
+    const Real totalLength = this->getLength();
+    if (x_used > totalLength) {
+        x_used = totalLength;
+    }
+    else if (x_used < 0.0) {
+        x_used = 0.0;
+    }
+   
+    const type::vector<Real>& keyPts = d_keyPoints.getValue();
+    for (auto i = 1; i < keyPts.size(); ++i)
     {
-        global_H_local.set(Vec3(x_used, 0.0, 0.0 ), Quat());
-        return;
+        if (x_used <= keyPts[i])
+        {
+            return l_sectionMaterials.get(i - 1)->getRestTransformOnX(global_H_local, x_used, keyPts[i - 1]);
+        }
     }
 
-    if(d_isAProceduralShape.getValue())
-    {
-        Real projetedLength = d_spireDiameter.getValue()*M_PI;
-        Real lengthSpire=sqrt(d_spireHeight.getValue()*d_spireHeight.getValue() + projetedLength*projetedLength );
-        // angle in the z direction
-        Real phi= atan(d_spireHeight.getValue()/projetedLength);
-
-        Quat Qphi;
-        Qphi.axisToQuat(Vec3(0,0,1),phi);
-
-        // spire angle (if theta=2*PI, there is a complete spire between startx and x_used)
-        Real lengthCurve= x_used-d_straightLength.getValue();
-        Real numSpire=lengthCurve/lengthSpire;
-        Real theta= 2*M_PI*numSpire;
-
-        // computation of the Quat
-        Quat Qtheta;
-        Qtheta.axisToQuat(Vec3(0,1,0),theta);
-        Quat newSpireQuat = Qtheta*Qphi;
-
-
-        // computation of the position
-        Real radius=d_spireDiameter.getValue()/2.0;
-        Vec3 PosEndCurve(radius*sin(theta), numSpire*d_spireHeight.getValue(), radius*(cos(theta)-1)  );
-        Vec3 SpirePos=PosEndCurve + Vec3(d_straightLength.getValue(),0,0);
-
-        global_H_local.set(SpirePos,newSpireQuat);
-    }
-    else
-    {
-        x_used = x_used - d_straightLength.getValue();
-        x_used = x_used/(d_length.getValue()-d_straightLength.getValue()) * m_absOfGeometry;
-
-        Coord p;
-        this->getRestPosNonProcedural(x_used,p);
-        Vec3 PosEndCurve = p.getCenter();
-        Quat ExtremityQuat = p.getOrientation();
-        Vec3 ExtremityPos = PosEndCurve + Vec3(d_straightLength.getValue(),0,0);
-
-        global_H_local.set(ExtremityPos,ExtremityQuat);
-    }
+    msg_warning() << "You should not be still here";
 }
 
 
@@ -399,158 +295,28 @@ void WireRestShape<DataTypes>::getYoungModulusAtX(const Real& x_curv, Real& youn
 template <class DataTypes>
 void WireRestShape<DataTypes>::getInterpolationParam(const Real& x_curv, Real &_rho, Real &_A, Real &_Iy , Real &_Iz, Real &_Asy, Real &_Asz, Real &_J) const
 {
-    BaseRodSectionMaterial<DataTypes>* wireSection = nullptr;
-    //getRodSectionMaterial(x_curv);
-    if (wireSection)
-        wireSection->getInterpolationParam(_rho, _A, _Iy, _Iz, _Asy, _Asz, _J);
-    else
-        msg_error() << " problem in getInterpolationParam : x_curv " << x_curv << " is not between keyPoints";
-}
+    const Real x_used = x_curv - Real(EPSILON);
+    const type::vector<Real>& keyPts = d_keyPoints.getValue();
 
-template <class DataTypes>
-void WireRestShape<DataTypes>::getRodSectionMaterial(const Real& x_curv)
-{
-    //const Real x_used = x_curv - Real(EPSILON);
-    //const type::vector<Real>& keyPts = d_keyPoints.getValue();
-
-    //// Check in which section x_used belongs to and get access to this section material
-    //for (auto i = 1; i < keyPts.size(); ++i)
-    //{
-    //    if (x_used <= keyPts[i])
-    //    {
-    //        return l_sectionMaterials.get(i - 1);
-    //    }
-    //}
-
-    //return nullptr;
-}
-
-//template <class DataTypes>
-//bool WireRestShape<DataTypes>::fillTopology()
-//{
-//    if (!_topology)
-//    {
-//        msg_error() << "Topology is null";
-//        return false;
-//    }
-//
-//    const auto length = this->d_length.getValue();
-//    if (length <= Real(0.0))
-//    {
-//        msg_error() << "Length is 0 (or negative), check if d_length has been given or computed.";
-//        return false;
-//    }
-//
-//    int nbrEdges = d_numEdges.getValue();
-//    if (nbrEdges <= 0)
-//    {
-//        msg_warning() << "Number of edges has been set to an invalid value: " << nbrEdges << ". Value should be a positive integer. Setting to default value: 10";
-//        nbrEdges = 10;
-//    }
-//
-//    /// fill topology :
-//    _topology->clear();
-//    _topology->cleanup();
-//
-//    Real dx = this->d_length.getValue() / nbrEdges;
-//
-//    /// add points
-//    for (int i = 0; i < d_numEdges.getValue() + 1; i++)
-//        _topology->addPoint(i * dx, 0, 0);
-//
-//    /// add segments
-//    for (int i = 0; i < d_numEdges.getValue(); i++)
-//        _topology->addEdge(i, i + 1);
-//
-//    return true;
-//}
-
-
-template <class DataTypes>
-void WireRestShape<DataTypes>::initRestConfig()
-{
-    m_curvAbs.clear();
-    double tot = 0;
-    m_curvAbs.push_back(0);
-    Quat input, output;
-    input.identity();
-    m_localRestTransforms.resize(m_localRestPositions.size());
-    m_localRestTransforms[0].setOrigin(Vec3(0,0,0));
-    m_localRestTransforms[0].setOrientation(input);
-
-    for(unsigned int i = 0; i < m_localRestPositions.size() - 1; i++)
+    // Check in which section x_used belongs to and get access to this section material
+    for (auto i = 1; i < keyPts.size(); ++i)
     {
-        Vec3 vec = m_localRestPositions[i+1] - m_localRestPositions[i];
-        double norm = vec.norm();
-        tot += norm;
-
-        this->rotateFrameForAlignX(input, vec, output);
-
-        input = output;
-
-        m_localRestTransforms[i+1].setOrientation(output);
-
-        Vec3 localPos = m_localRestPositions[i+1] - m_localRestPositions[0];
-
-        m_localRestTransforms[i+1].setOrigin(localPos);
-
-        m_curvAbs.push_back(tot);
-    }
-    m_absOfGeometry = tot;
-
-    Real newLength = d_straightLength.getValue() + m_absOfGeometry;
-    d_length.setValue(newLength);
-
-    msg_info() <<"Length of the loaded shape = "<< m_absOfGeometry << ", total length with straight length = " << newLength ;
-}
-
-
-template <class DataTypes>
-void WireRestShape<DataTypes>::getRestPosNonProcedural(Real& abs, Coord &p)
-{
-    /*** find the range which includes the "requested" abs ***/
-    double startingAbs = 0; unsigned int index = 0;
-
-    while ((startingAbs < abs) && (index < m_localRestPositions.size()))
-    {
-        index++;
-        startingAbs = m_curvAbs[index];
+        if (x_used <= keyPts[i])
+        {
+            return l_sectionMaterials.get(i - 1)->getInterpolationParam(_rho, _A, _Iy, _Iz, _Asy, _Asz, _J);
+        }
     }
 
-    /*** OOB ***/
-    if(abs > startingAbs)
-    {
-        msg_error() << "abs = "<<abs<<" et startingAbs = "<< startingAbs<< msgendl
-                    << "Out of bound position request" ;
-        return ;
-    }
-    else /*** Expected case ***/
-    {
-        Real alpha, one_minus_alpha;
-        Vec3 result;
-
-        alpha = (abs - m_curvAbs[index-1] ) / (m_curvAbs[index] - m_curvAbs[index-1]);
-        one_minus_alpha = 1 - alpha;
-        result = m_localRestTransforms[index - 1].getOrigin() * one_minus_alpha + m_localRestTransforms[index].getOrigin() * alpha;
-        Quat slerp;
-        slerp.slerp( m_localRestTransforms[index - 1].getOrientation(),  m_localRestTransforms[index].getOrientation(), alpha, true );
-
-        slerp.normalize();
-
-        p.getCenter() = result;
-
-        p.getOrientation() = slerp;
-    }
+    msg_error() << " problem in getInterpolationParam : x_curv " << x_curv << " is not between keyPoints" << keyPts;
 }
+
 
 template <class DataTypes>
 typename WireRestShape<DataTypes>::Real WireRestShape<DataTypes>::getLength()
 {
-    if(d_brokenIn2.getValue())
-        return d_straightLength.getValue();
-    else
-        return d_length.getValue();
+    return d_keyPoints.getValue().back();
 }
+
 
 template <class DataTypes>
 void WireRestShape<DataTypes>::getNumberOfCollisionSegment(Real &dx, unsigned int &numLines)
@@ -560,8 +326,9 @@ void WireRestShape<DataTypes>::getNumberOfCollisionSegment(Real &dx, unsigned in
     {
         numLines += l_sectionMaterials.get(i)->getNbCollisionEdges();
     }
-    dx = d_length.getValue() / numLines;
+    dx = getLength() / numLines;
 }
+
 
 template <class DataTypes>
 void WireRestShape<DataTypes>::computeOrientation(const Vec3& AB, const Quat& Q, Quat &result)
@@ -595,26 +362,6 @@ void WireRestShape<DataTypes>::computeOrientation(const Vec3& AB, const Quat& Q,
 
 }
 
-template<class DataTypes>
-void WireRestShape<DataTypes>::draw(const core::visual::VisualParams* vparams)
-{
-    if (!d_drawRestShape.getValue())
-        return;
-
-    vparams->drawTool()->saveLastState();
-    vparams->drawTool()->setLightingEnabled(false);
-
-    std::vector< sofa::type::Vec3 > points;
-    points.reserve(m_localRestPositions.size());
-
-    for (unsigned int i = 0; i < m_localRestPositions.size(); i++)
-    {
-        points.emplace_back(m_localRestPositions[i][0], m_localRestPositions[i][1], m_localRestPositions[i][2]);
-    }
-
-    vparams->drawTool()->drawPoints(points, 10, sofa::type::RGBAColor(1, 0.5, 0.5, 1));
-    vparams->drawTool()->restoreLastState();
-}
 
 } // namespace _wirerestshape_
 using _wirerestshape_::WireRestShape;
