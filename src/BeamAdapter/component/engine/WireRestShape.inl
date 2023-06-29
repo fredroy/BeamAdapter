@@ -71,7 +71,6 @@ WireRestShape<DataTypes>::WireRestShape() :
   , d_drawRestShape(initData(&d_drawRestShape, (bool)false, "draw", "draw rest shape"))
   , l_sectionMaterials(initLink("wireMaterials", "link to Wire Section Materials (to be ordered according to the instrument, from handle to tip)"))
   , l_topology(initLink("topology", "link to the topology container"))
-  , l_loader(initLink("loader", "link to the MeshLoader"))
 {
     d_spireDiameter.setGroup("Procedural");
     d_spireHeight.setGroup("Procedural");
@@ -150,29 +149,10 @@ void WireRestShape<DataTypes>::init()
         return;
     }
 
-    if (!d_isAProceduralShape.getValue())
-    {
-        // Get meshLoader, check first if loader has been set using link. Otherwise will search in current context.
-        loader = l_loader.get();
-
-        if (!loader)
-            this->getContext()->get(loader);
-
-        if (!loader) {
-            msg_error() << "Cannot find a mesh loader. Please insert a MeshObjLoader in the same node or use l_loader to specify the path in the scene graph.";
-            this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
-            return;
-        }
-        else
-        {
-            msg_info() << "Found a mesh with " << loader->d_edges.getValue().size() << " edges";
-            initFromLoader();
-        }
-    }
 
     if (l_sectionMaterials.empty())
     {
-        msg_error() << "No WireSectionMaterial set. At least one material should be set and link using wireMaterials.";
+        msg_error() << "No BaseRodSectionMaterial set. At least one material should be set and link using wireMaterials.";
         this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
         return;
     }
@@ -188,15 +168,6 @@ void WireRestShape<DataTypes>::init()
         return;
     }
 
-    //else
-    //{
-    //    if (!fillTopology())
-    //    {
-    //        msg_error() << "Error while trying to fill the associated topology, setting the state to Invalid";
-    //        this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
-    //        return;
-    //    }
-    //}
     // Get pointer to the topology Modifier (for topological changes)
     _topology->getContext()->get(edgeMod);
     if (edgeMod == nullptr)
@@ -483,58 +454,31 @@ void WireRestShape<DataTypes>::getYoungModulusAtX(const Real& x_curv, Real& youn
 template <class DataTypes>
 void WireRestShape<DataTypes>::getInterpolationParam(const Real& x_curv, Real &_rho, Real &_A, Real &_Iy , Real &_Iz, Real &_Asy, Real &_Asz, Real &_J) const
 {
-    const Real x_used = x_curv - Real(EPSILON);
-    const type::vector<Real>& keyPts = d_keyPoints.getValue();
-
-    // Check in which section x_used belongs to and get access to this section material
-    for (auto i = 1; i < keyPts.size(); ++i)
-    {
-        if (x_used <= keyPts[i])
-        {
-            return l_sectionMaterials.get(i - 1)->getInterpolationParam(_rho, _A, _Iy, _Iz, _Asy, _Asz, _J);
-        }
-    }
-
-    msg_error() << " problem in getInterpolationParam : x_curv " << x_curv << " is not between keyPoints" << keyPts;
+    BaseRodSectionMaterial<DataTypes>* wireSection = nullptr;
+    //getRodSectionMaterial(x_curv);
+    if (wireSection)
+        wireSection->getInterpolationParam(_rho, _A, _Iy, _Iz, _Asy, _Asz, _J);
+    else
+        msg_error() << " problem in getInterpolationParam : x_curv " << x_curv << " is not between keyPoints";
 }
-
 
 template <class DataTypes>
-bool WireRestShape<DataTypes>::checkTopology()
+void WireRestShape<DataTypes>::getRodSectionMaterial(const Real& x_curv)
 {
-    if (!loader->d_edges.getValue().size())
-    {
-        msg_error() << "There is no edges in the topology loaded by " << loader->getName() ;
-        return false;
-    }
+    //const Real x_used = x_curv - Real(EPSILON);
+    //const type::vector<Real>& keyPts = d_keyPoints.getValue();
 
-    if (loader->d_triangles.getValue().size())
-    {
-        msg_error() << "There are triangles in the topology loaded by " << loader->getName() ;
-        return false;
-    }
+    //// Check in which section x_used belongs to and get access to this section material
+    //for (auto i = 1; i < keyPts.size(); ++i)
+    //{
+    //    if (x_used <= keyPts[i])
+    //    {
+    //        return l_sectionMaterials.get(i - 1);
+    //    }
+    //}
 
-    if (loader->d_quads.getValue().size())
-    {
-        msg_error() << "There are quads in the topology loaded by " << loader->getName() ;
-        return false;
-    }
-
-    if (loader->d_polygons.getValue().size())
-    {
-        msg_error() << "There are polygons in the topology loaded by " << loader->getName() ;
-        return false;
-    }
-
-    //TODO(dmarchal 2017-05-17) when writing a TODO please specify:
-    // who will do that
-    // when it will be done
-    /// \todo check if the topology is like a wire
-
-
-    return true;
+    //return nullptr;
 }
-
 
 //template <class DataTypes>
 //bool WireRestShape<DataTypes>::fillTopology()
@@ -577,109 +521,6 @@ bool WireRestShape<DataTypes>::checkTopology()
 //}
 
 
-
-template <class DataTypes>
-void WireRestShape<DataTypes>::initFromLoader()
-{
-    if (!checkTopology())
-    {
-        this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
-        return;
-    }
-
-    // this is... dirty but d_straightLength itself is not relevant for loader-created wire
-    // but the code uses it actively and expects it to not be zero.
-    if (d_straightLength.getValue() <= 0.0)
-    {
-        msg_warning() << "straightLength cannot be 0 (or negative...). Setting a minimum value.";
-        d_straightLength.setValue(0.0001);
-    }
-
-    type::vector<Vec3> vertices;
-    sofa::core::topology::BaseMeshTopology::SeqEdges edges;
-
-    //get the topology position
-    auto topoVertices = sofa::helper::getReadAccessor(loader->d_positions);
-
-    //copy the topology edges in a local vector
-    auto topoEdges = sofa::helper::getReadAccessor(loader->d_edges);
-    edges = topoEdges.ref();
-
-    /** renumber the vertices  **/
-    type::vector<unsigned int> verticesConnexion; //gives the number of edges connected to a vertex
-    for(unsigned int i =0; i < topoVertices.size(); i++)
-        verticesConnexion.push_back(2);
-
-    for(const auto& ed : edges)
-    {
-        verticesConnexion[ed[0]]--;
-        verticesConnexion[ed[1]]--;
-    }
-
-    msg_info() << "Successfully compute the vertex connexion" ;
-
-    // check for the first corner of the edge
-    unsigned int firstIndex = 0;
-    bool found = false;
-    while((firstIndex < verticesConnexion.size()) && !found)
-    {
-        if(verticesConnexion[firstIndex] == 1)
-            found = true;
-        else
-            firstIndex++;
-    }
-
-    if(firstIndex == verticesConnexion.size())
-    {
-        msg_error() << "The first vertex of the beam structure is not found, probably because of a closed structure" ;
-        this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
-        return;
-    }
-
-    vertices.push_back(topoVertices[firstIndex]);
-
-    while(edges.size() > 0)
-    {
-        auto it = edges.begin();
-        auto end = edges.end();
-
-        bool notFound = true;
-        while (notFound && (it != end))
-        {
-            const auto& ed = (*it);
-            auto toDel = it;
-            it++;
-            if(ed[0] == firstIndex)
-            {
-                vertices.push_back(topoVertices[ed[1]]);
-                firstIndex = ed[1];
-                edges.erase(toDel);
-                notFound = false;
-
-            }
-            else if(ed[1] == firstIndex)
-            {
-                vertices.push_back(topoVertices[ed[0]]);
-                firstIndex = ed[0];
-                edges.erase(toDel);
-                notFound = false;
-            }
-        }
-    }
-
-    msg_info() << "Successfully computed the topology" ;
-
-    m_localRestPositions = vertices;
-
-    for(unsigned int i = 0; i < m_localRestPositions.size() - 1; i++)
-        m_localRestPositions[i] *= d_nonProceduralScale.getValue();
-
-    initRestConfig();
-    // TODO epernod 2022-08-05: Init from loader seems quite buggy, need to check if this is still needed and working
-    this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Valid);
-}
-
-
 template <class DataTypes>
 void WireRestShape<DataTypes>::initRestConfig()
 {
@@ -716,13 +557,6 @@ void WireRestShape<DataTypes>::initRestConfig()
     d_length.setValue(newLength);
 
     msg_info() <<"Length of the loaded shape = "<< m_absOfGeometry << ", total length with straight length = " << newLength ;
-
-    //if (!fillTopology())
-    //{
-    //    msg_error() << "Error while trying to fill the associated topology, setting the state to Invalid";
-    //    this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
-    //    return;
-    //}
 }
 
 

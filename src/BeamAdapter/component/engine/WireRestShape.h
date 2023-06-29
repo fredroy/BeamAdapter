@@ -34,7 +34,7 @@
 
 #include <BeamAdapter/config.h>
 #include <BeamAdapter/utils/BeamSection.h>
-#include <BeamAdapter/component/model/WireSectionMaterial.h>
+#include <BeamAdapter/component/model/BaseRodSectionMaterial.h>
 
 #include <sofa/defaulttype/SolidTypes.h>
 #include <sofa/core/objectmodel/BaseObject.h>
@@ -73,7 +73,7 @@ public:
     using Quat = sofa::type::Quat<Real>;
    
     using BeamSection = sofa::beamadapter::BeamSection;
-
+    
     /**
      * @brief Default Constructor.
      */
@@ -116,12 +116,11 @@ public:
      void initRestConfig();
      void getRestPosNonProcedural(Real& abs, Coord &p);
      void computeOrientation(const Vec3& AB, const Quat& Q, Quat &result);     
-     void initFromLoader();
-     bool checkTopology();
+     
 
      //[[nodiscard]] bool fillTopology();
      Real getLength() ;
-     void getCollisionSampling(Real &dx, const Real &x_curv) ;
+     void getCollisionSampling(Real &dx, const Real &x_curv);
      void getNumberOfCollisionSegment(Real &dx, unsigned int &numLines) ;
 
      //TODO(dmarchal 2017-05-17) Please specify who and when it will be done either a time after wich
@@ -130,6 +129,8 @@ public:
      void releaseWirePart();
 
      void rotateFrameForAlignX(const Quat &input, Vec3 &x, Quat &output);
+
+     void getRodSectionMaterial(const Real& x_curv);
 
 protected:
     /// Internal method to init Lengths vector @sa d_keyPoints if not set using @sa d_length and @sa d_straightLength. Returns false if init can't be performed.
@@ -154,7 +155,7 @@ public:
      Data<bool>	d_drawRestShape;
      
      /// Vector or links to the Wire section material. The order of the linked material will define the WireShape structure.
-     MultiLink<WireRestShape<DataTypes>, WireSectionMaterial<DataTypes>, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK> l_sectionMaterials;
+     MultiLink<WireRestShape<DataTypes>, BaseRodSectionMaterial<DataTypes>, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK> l_sectionMaterials;
 
 private:
      /// Data required for the File loading
