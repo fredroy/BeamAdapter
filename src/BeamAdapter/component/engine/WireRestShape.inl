@@ -59,7 +59,6 @@ template <class DataTypes>
 WireRestShape<DataTypes>::WireRestShape()
     : d_density(initData(&d_density, "densityOfBeams", "density of beams between key points"))
     , d_keyPoints(initData(&d_keyPoints,"keyPoints","key points of the shape (curv absc)"))
-    , d_drawRestShape(initData(&d_drawRestShape, (bool)false, "draw", "draw rest shape"))
     , l_sectionMaterials(initLink("wireMaterials", "link to Wire Section Materials (to be ordered according to the instrument, from handle to tip)"))
     , l_topology(initLink("topology", "link to the topology container"))
 {
@@ -106,11 +105,7 @@ void WireRestShape<DataTypes>::init()
     ////////// keyPoint list and Density Assignement ///////
     ////////////////////////////////////////////////////////
 
-    if (!initLengths())
-    {
-        this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
-        return;
-    }
+    initLengths();
 
     // Get pointer to the topology Modifier (for topological changes)
     _topology->getContext()->get(edgeMod);
@@ -127,7 +122,7 @@ void WireRestShape<DataTypes>::init()
 
 
 template <class DataTypes>
-bool WireRestShape<DataTypes>::initLengths()
+void WireRestShape<DataTypes>::initLengths()
 {
     auto keyPointList = sofa::helper::getWriteOnlyAccessor(d_keyPoints);
     auto densityList = sofa::helper::getWriteOnlyAccessor(d_density);
@@ -143,8 +138,6 @@ bool WireRestShape<DataTypes>::initLengths()
         keyPointList[i+1] = keyPointList[i] + rodSection->getLength();
         densityList[i] = rodSection->getNbCollisionEdges();
     }
-
-    return true;
 }
 
 
@@ -243,7 +236,7 @@ void WireRestShape<DataTypes>::getCollisionSampling(Real &dx, const Real &x_curv
     // If x_used is out of bounds. Warn user and returns default value.
     numLines = 20;
     dx = totalLength / numLines;
-    msg_error() << " problem is  getCollisionSampling : x_curv " << x_used << " is not between keyPoints" << d_keyPoints.getValue();
+    msg_error() << " problem in getCollisionSampling : x_curv " << x_used << " is not between keyPoints" << d_keyPoints.getValue();
 }
 
 
@@ -269,7 +262,7 @@ void WireRestShape<DataTypes>::getRestTransformOnX(Transform &global_H_local, co
         }
     }
 
-    msg_warning() << "You should not be still here";
+    msg_error() << " problem in getRestTransformOnX : x_curv " << x_used << " is not between keyPoints" << d_keyPoints.getValue();
 }
 
 

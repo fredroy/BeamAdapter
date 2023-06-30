@@ -33,7 +33,6 @@
 
 
 #include <BeamAdapter/config.h>
-#include <BeamAdapter/utils/BeamSection.h>
 #include <BeamAdapter/component/model/BaseRodSectionMaterial.h>
 
 #include <sofa/defaulttype/SolidTypes.h>
@@ -57,8 +56,9 @@ using namespace sofa::beamadapter;
  * \class WireRestShape
  * \brief Describe the shape functions on multiple segments
  *  
- *  Describe the full shape of a Wire with a given length and radius. The wire is discretized by a set of beams (given by the keyPoints and the relatives Beam density)
- *  This component compute the beam discretization and the shape functions on multiple segments using curvilinear abscissa.
+ * Describe the full shape of a Wire with a given set of @sa BaseRodSectionMaterial. The wire is discretized by a set of beams (given by the keyPoints and the relatives Beam density)
+ * @sa d_keyPoints and @d_density are computed by method @sa initLengths using the set of rod sections description.
+ * This component compute the beam discretization and the shape functions on multiple segments using curvilinear abscissa.
  */
 template <class DataTypes>
 class WireRestShape : public core::objectmodel::BaseObject
@@ -72,8 +72,6 @@ public:
     using Vec3 = sofa::type::Vec<3, Real>;
     using Quat = sofa::type::Quat<Real>;
    
-    using BeamSection = sofa::beamadapter::BeamSection;
-    
     /**
      * @brief Default Constructor.
      */
@@ -88,13 +86,7 @@ public:
      void init() override ;
 
 
-     /////////////////////////// Methods of WireRestShape  //////////////////////////////////////////
-
-     /// For coils: a part of the coil instrument can be brokenIn2  (by default the point of release is the end of the straight length)
-     Real getReleaseCurvAbs() const {
-         msg_warning() << "Releasing catheter or brokenIn2 mode is not anymore supported. Feature has been removed after release v23.06";
-         return 0.0;
-     }
+     /////////////////////////// Methods of WireRestShape  //////////////////////////////////////////     
 
      /// This function is called by the force field to evaluate the rest position of each beam
      void getRestTransformOnX(Transform &global_H_local, const Real &x);
@@ -115,19 +107,28 @@ public:
      /// Functions enabling to load and use a geometry given from OBJ external file
      void computeOrientation(const Vec3& AB, const Quat& Q, Quat &result);     
      
-
-     //[[nodiscard]] bool fillTopology();
+     
      Real getLength() ;
      void getCollisionSampling(Real &dx, const Real &x_curv);
      void getNumberOfCollisionSegment(Real &dx, unsigned int &numLines) ;
+
+
+
+     /////////////////////////// Deprecated Methods  ////////////////////////////////////////// 
+
+     /// For coils: a part of the coil instrument can be brokenIn2  (by default the point of release is the end of the straight length)
+     Real getReleaseCurvAbs() const {
+         msg_warning() << "Releasing catheter or brokenIn2 mode is not anymore supported. Feature has been removed after release v23.06";
+         return 0.0;
+     }
 
      void releaseWirePart() {
          msg_warning() << "Releasing catheter or brokenIn2 mode is not anymore supported. Feature has been removed after release v23.06";
      }     
 
 protected:
-    /// Internal method to init Lengths vector @sa d_keyPoints if not set using @sa d_length and @sa d_straightLength. Returns false if init can't be performed.
-    bool initLengths();
+    /// Internal method to init Lengths vector @sa d_keyPoints using the length of each materials @sa l_sectionMaterials.
+    void initLengths();
     /// Internal method to init Edge Topology @sa _topology using the list of materials @sa l_sectionMaterials. Returns false if init can't be performed.
     bool initTopology();
 
@@ -135,9 +136,6 @@ protected:
 public:
      Data<type::vector<int> > d_density;
      Data<type::vector<Real> > d_keyPoints;
-
-     /// broken in 2 case
-     Data<bool>	d_drawRestShape;
      
      /// Vector or links to the Wire section material. The order of the linked material will define the WireShape structure.
      MultiLink<WireRestShape<DataTypes>, BaseRodSectionMaterial<DataTypes>, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK> l_sectionMaterials;
