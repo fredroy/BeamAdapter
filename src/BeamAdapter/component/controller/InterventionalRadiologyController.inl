@@ -868,11 +868,11 @@ void InterventionalRadiologyController<DataTypes>::applyInterventionalRadiologyC
             //2. this is not the case and the node position can be interpolated using previous step positions
         if ((xCurvAbs - std::numeric_limits<float>::epsilon()) > prev_maxCurvAbs + threshold)
         {
-            msg_error() << "Case 1 should never happen ==> avoid using totalLengthIsChanging! xCurvAbs = " << xCurvAbs 
-                << " > prev_maxCurvAbs = " << prev_maxCurvAbs << " + threshold: " << threshold << "\n"
-                << "\n | newCurvAbs: " << newCurvAbs                
-                << "\n | modifiedCurvAbs: " << modifiedCurvAbs
-                << "\n | previous nodeCurvAbs: " << m_nodeCurvAbs;
+            //msg_error() << "Case 1 should never happen ==> avoid using totalLengthIsChanging! xCurvAbs = " << xCurvAbs 
+            //    << " > prev_maxCurvAbs = " << prev_maxCurvAbs << " + threshold: " << threshold << "\n"
+            //    << "\n | newCurvAbs: " << newCurvAbs                
+            //    << "\n | modifiedCurvAbs: " << modifiedCurvAbs
+            //    << "\n | previous nodeCurvAbs: " << m_nodeCurvAbs;
             // case 1 (the abs curv is further than the previous state of the instrument)
             // verifier qu'il s'agit bien d'un instrument qu'on est en train de controller
             // interpoler toutes les positions "sorties" de l'instrument en supprimant l'ajout de dx qu'on vient de faire

@@ -9,7 +9,6 @@ sofa_find_package(Sofa.Component.StateContainer REQUIRED)
 sofa_find_package(Sofa.Component.Controller REQUIRED)
 sofa_find_package(Sofa.Component.Topology.Container.Dynamic REQUIRED)
 sofa_find_package(Sofa.Component.Topology.Mapping REQUIRED)
-sofa_find_package(Sofa.Component.Collision.Geometry REQUIRED)
 sofa_find_package(Sofa.Component.Constraint.Projective REQUIRED)
 sofa_find_package(Sofa.Component.Constraint.Lagrangian REQUIRED)
 sofa_find_package(SofaImplicitField QUIET)
@@ -147,7 +146,7 @@ add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILE
 
 target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Simulation.Core)
 target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Component.StateContainer Sofa.Component.Controller Sofa.Component.Topology.Container.Dynamic Sofa.Component.Topology.Mapping)
-target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Component.Collision.Geometry Sofa.Component.Constraint.Lagrangian Sofa.Component.Constraint.Projective)
+target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Component.Constraint.Lagrangian Sofa.Component.Constraint.Projective)
 
 if(SofaImplicitField_FOUND)
     target_link_libraries(${PROJECT_NAME} PUBLIC SofaImplicitField)

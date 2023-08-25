@@ -38,8 +38,6 @@
 #include <sofa/helper/set.h>
 
 #include <sofa/component/controller/MechanicalStateController.h>
-#include <sofa/component/collision/geometry/PointModel.h>
-#include <sofa/component/collision/geometry/LineModel.h>
 #include <sofa/defaulttype/RigidTypes.h>
 
 #include <BeamAdapter/component/WireBeamInterpolation.h>
@@ -66,7 +64,6 @@ using sofa::defaulttype::Rigid3dTypes ;
 using sofa::defaulttype::Rigid3fTypes ;
 using sofa::defaulttype::SolidTypes ;
 using sofa::core::topology::TopologyContainer ;
-using sofa::core::CollisionModel ;
 using sofa::core::topology::BaseMeshTopology ;
 using sofa::component::fem::WireBeamInterpolation;
 using sofa::simulation::mechanicalvisitor::MechanicalProjectPositionAndVelocityVisitor;

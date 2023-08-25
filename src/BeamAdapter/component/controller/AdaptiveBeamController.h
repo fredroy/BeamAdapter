@@ -37,8 +37,6 @@
 //////////////////////// Inclusion of headers...from wider to narrower/closer //////////////////////
 #include <sofa/component/controller/MechanicalStateController.h>
 #include <sofa/component/constraint/projective/FixedConstraint.h>
-#include <sofa/component/collision/geometry/PointModel.h>
-#include <sofa/component/collision/geometry/LineModel.h>
 
 #include <BeamAdapter/component/BeamInterpolation.h>
 #include <sofa/component/topology/container/dynamic/EdgeSetGeometryAlgorithms.h>
@@ -65,7 +63,6 @@ using sofa::component::fem::BeamInterpolation ;
 using sofa::core::objectmodel::KeypressedEvent ;
 using sofa::core::objectmodel::MouseEvent ;
 using sofa::core::topology::BaseMeshTopology ;
-using sofa::core::CollisionModel ;
 using sofa::defaulttype::SolidTypes ;
 using sofa::type::Vec ;
 using sofa::type::vector ;
