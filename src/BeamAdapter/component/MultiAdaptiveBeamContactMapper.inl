@@ -19,22 +19,15 @@
 *                                                                             *
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_COLLISION_MULTIADAPTIVEBEAMCONTACTMAPPER_INL
-#define SOFA_COMPONENT_COLLISION_MULTIADAPTIVEBEAMCONTACTMAPPER_INL
+#pragma once
 
-#include "MultiAdaptiveBeamContactMapper.h"
-#include <sofa/simulation/common/Node.h>
-#include <sofa/simulation/common/Simulation.h>
-#include <sofa/simulation/common/DeleteVisitor.h>
+#include <BeamAdapter/component/MultiAdaptiveBeamContactMapper.h>
+#include <sofa/simulation/Node.h>
+#include <sofa/simulation/Simulation.h>
+#include <sofa/simulation/DeleteVisitor.h>
 #include <iostream>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace collision
+namespace sofa::component::collision::response::mapper
 {
 
 
@@ -80,7 +73,7 @@ typename MultiAdaptiveBeamContactMapper<TCollisionModel,DataTypes>::MMechanicalS
         parent->addChild(child); child->updateSimulationContext();
         typename MMechanicalObject::SPtr outmodel = sofa::core::objectmodel::New<MMechanicalObject>();
         child->addObject(outmodel);
-        outmodel->useMask.setValue(true);
+        // outmodel->useMask.setValue(true);
 
         mapping =  sofa::core::objectmodel::New<MMapping>(instate, outmodel.get(),m_ircontroller);
         mapping->setName(name);
@@ -100,17 +93,11 @@ typename MultiAdaptiveBeamContactMapper<TCollisionModel,DataTypes>::MMechanicalS
         child =childPtr.get();
         parent->addChild(child); child->updateSimulationContext();
         typename MMechanicalObject::SPtr outmodel = sofa::core::objectmodel::New<MMechanicalObject>();
-        outmodel->useMask.setValue(true);
+        //outmodel->useMask.setValue(true);
         mapping = NULL;
     }
     return outmodel;
 }
 
 
-} // namespace collision
-
-} // namespace component
-
-} // namespace sofa
-
-#endif /* SOFA_COMPONENT_COLLISION_MULTIADAPTIVEBEAMCONTACTMAPPER_INL */
+} // namespace sofa::component::collision::response::mapper

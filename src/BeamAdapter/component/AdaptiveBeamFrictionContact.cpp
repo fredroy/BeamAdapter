@@ -25,28 +25,25 @@
  * */
 
 
-#ifdef SOFA_DEV
+// #ifdef SOFA_DEV
 
 
-#include <sofa/component/collision/FrictionContact.inl>
+#include <sofa/component/collision/response/contact/FrictionContact.inl>
 
-#include "AdaptiveBeamContactMapper.h"
-#include "MultiAdaptiveBeamContactMapper.h"
+#include <BeamAdapter/component/AdaptiveBeamContactMapper.inl>
+#include <BeamAdapter/component/MultiAdaptiveBeamContactMapper.inl>
 
 
-
-namespace sofa
+namespace sofa::component::collision::response::contact
 {
+    
+using namespace sofa::component::collision::geometry;
+using namespace sofa::core::collision;
 
-namespace component
-{
-
-namespace collision
-{
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 template < >
-FrictionContact<BSplineModel<1> , PointModel>::FrictionContact(CollisionModel1* model1, CollisionModel2* model2, Intersection* intersectionMethod)
+FrictionContact<BSplineModel<1> , PointCollisionModel<sofa::defaulttype::Vec3Types>>::FrictionContact(CollisionModel1* model1, CollisionModel2* model2, Intersection* intersectionMethod)
 : model1(model1)
 , model2(model2)
 , intersectionMethod(intersectionMethod)
@@ -62,7 +59,7 @@ FrictionContact<BSplineModel<1> , PointModel>::FrictionContact(CollisionModel1* 
 
 }
 template < >
-FrictionContact<BSplineModel<1> , SphereModel>::FrictionContact(CollisionModel1* model1, CollisionModel2* model2, Intersection* intersectionMethod)
+FrictionContact<BSplineModel<1> , SphereCollisionModel<sofa::defaulttype::Vec3Types>>::FrictionContact(CollisionModel1* model1, CollisionModel2* model2, Intersection* intersectionMethod)
 : model1(model1)
 , model2(model2)
 , intersectionMethod(intersectionMethod)
@@ -83,7 +80,7 @@ FrictionContact<BSplineModel<1> , SphereModel>::FrictionContact(CollisionModel1*
 
 
 template <>
-void FrictionContact<BSplineModel<1> , PointModel>::activateMappers()
+void FrictionContact<BSplineModel<1> , PointCollisionModel<sofa::defaulttype::Vec3Types>>::activateMappers()
 {
     if (!m_constraint)
 	{
@@ -91,7 +88,7 @@ void FrictionContact<BSplineModel<1> , PointModel>::activateMappers()
         MechanicalState1* mmodel1 = mapper1.createMapping();
         // Get the mechanical model from mapper2 to fill the constraints vector
         MechanicalState2* mmodel2 = selfCollision ? mmodel1 : mapper2.createMapping();
-        m_constraint = sofa::core::objectmodel::New<constraintset::UnilateralInteractionConstraint<Vec3Types> >(mmodel1, mmodel2);
+        m_constraint = sofa::core::objectmodel::New<sofa::component::constraint::lagrangian::model::UnilateralInteractionConstraint<Vec3Types>  >(mmodel1, mmodel2);
         m_constraint->setName( getName() );
     }
 
@@ -125,7 +122,10 @@ void FrictionContact<BSplineModel<1> , PointModel>::activateMappers()
         //double constraintValue = ((o->point[1] - o->point[0]) * o->normal) - intersectionMethod->getContactDistance();
 
         // Create mapping for first point
+#ifdef DETECTIONOUTPUT_BARYCENTRICINFO
         index1 = mapper1.addBaryPoint(o->baryCoords[0], index1, r1);
+#endif
+
         // Create mapping for second point
         index2 = selfCollision ? mapper1.addPoint(o->point[1], index2, r2) : mapper2.addPoint(o->point[1], index2, r2);
         double distance = d0 + r1 + r2;
@@ -145,7 +145,7 @@ void FrictionContact<BSplineModel<1> , PointModel>::activateMappers()
 }
 
 template <>
-void FrictionContact<BSplineModel<1> , SphereModel>::activateMappers()
+void FrictionContact<BSplineModel<1> , SphereCollisionModel<sofa::defaulttype::Vec3Types>>::activateMappers()
 {
     if (!m_constraint)
 	{
@@ -153,7 +153,7 @@ void FrictionContact<BSplineModel<1> , SphereModel>::activateMappers()
         MechanicalState1* mmodel1 = mapper1.createMapping();
         // Get the mechanical model from mapper2 to fill the constraints vector
         MechanicalState2* mmodel2 = selfCollision ? mmodel1 : mapper2.createMapping();
-        m_constraint = sofa::core::objectmodel::New<constraintset::UnilateralInteractionConstraint<Vec3Types> >(mmodel1, mmodel2);
+        m_constraint = sofa::core::objectmodel::New<sofa::component::constraint::lagrangian::model::UnilateralInteractionConstraint<Vec3Types> >(mmodel1, mmodel2);
         m_constraint->setName( getName() );
     }
 
@@ -187,7 +187,9 @@ void FrictionContact<BSplineModel<1> , SphereModel>::activateMappers()
         //double constraintValue = ((o->point[1] - o->point[0]) * o->normal) - intersectionMethod->getContactDistance();
 
         // Create mapping for first point
+#ifdef DETECTIONOUTPUT_BARYCENTRICINFO
         index1 = mapper1.addBaryPoint(o->baryCoords[0], index1, r1);
+#endif
         // Create mapping for second point
         index2 = selfCollision ? mapper1.addPoint(o->point[1], index2, r2) : mapper2.addPoint(o->point[1], index2, r2);
         double distance = d0 + r1 + r2;
@@ -206,8 +208,8 @@ void FrictionContact<BSplineModel<1> , SphereModel>::activateMappers()
 
 }
 
-Creator<Contact::Factory, FrictionContact<BSplineModel<1> , PointModel> > AdaptiveBSplinePointFrictionContactClass("FrictionContact", true);
-Creator<Contact::Factory, FrictionContact<BSplineModel<1> , SphereModel> > AdaptiveBSplineSphereFrictionContactClass("FrictionContact", true);
+Creator<Contact::Factory, FrictionContact<BSplineModel<1> , PointCollisionModel<sofa::defaulttype::Vec3Types>> > AdaptiveBSplinePointFrictionContactClass("FrictionContact", true);
+Creator<Contact::Factory, FrictionContact<BSplineModel<1> , SphereCollisionModel<sofa::defaulttype::Vec3Types>> > AdaptiveBSplineSphereFrictionContactClass("FrictionContact", true);
 
 
 
@@ -215,7 +217,7 @@ Creator<Contact::Factory, FrictionContact<BSplineModel<1> , SphereModel> > Adapt
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 template < >
-FrictionContact<BSplineModel<2> , PointModel>::FrictionContact(CollisionModel1* model1, CollisionModel2* model2, Intersection* intersectionMethod)
+FrictionContact<BSplineModel<2> , PointCollisionModel<sofa::defaulttype::Vec3Types>>::FrictionContact(CollisionModel1* model1, CollisionModel2* model2, Intersection* intersectionMethod)
 : model1(model1)
 , model2(model2)
 , intersectionMethod(intersectionMethod)
@@ -231,7 +233,7 @@ FrictionContact<BSplineModel<2> , PointModel>::FrictionContact(CollisionModel1* 
 
 }
 template < >
-FrictionContact<BSplineModel<2> , SphereModel>::FrictionContact(CollisionModel1* model1, CollisionModel2* model2, Intersection* intersectionMethod)
+FrictionContact<BSplineModel<2> , SphereCollisionModel<sofa::defaulttype::Vec3Types>>::FrictionContact(CollisionModel1* model1, CollisionModel2* model2, Intersection* intersectionMethod)
 : model1(model1)
 , model2(model2)
 , intersectionMethod(intersectionMethod)
@@ -252,7 +254,7 @@ FrictionContact<BSplineModel<2> , SphereModel>::FrictionContact(CollisionModel1*
 
 
 template <>
-void FrictionContact<BSplineModel<2> , PointModel>::activateMappers()
+void FrictionContact<BSplineModel<2> , PointCollisionModel<sofa::defaulttype::Vec3Types>>::activateMappers()
 {
     if (!m_constraint)
 	{
@@ -260,7 +262,7 @@ void FrictionContact<BSplineModel<2> , PointModel>::activateMappers()
         MechanicalState1* mmodel1 = mapper1.createMapping();
         // Get the mechanical model from mapper2 to fill the constraints vector
         MechanicalState2* mmodel2 = selfCollision ? mmodel1 : mapper2.createMapping();
-        m_constraint = sofa::core::objectmodel::New<constraintset::UnilateralInteractionConstraint<Vec3Types> >(mmodel1, mmodel2);
+        m_constraint = sofa::core::objectmodel::New<sofa::component::constraint::lagrangian::model::UnilateralInteractionConstraint<Vec3Types>  >(mmodel1, mmodel2);
         m_constraint->setName( getName() );
     }
 
@@ -294,7 +296,9 @@ void FrictionContact<BSplineModel<2> , PointModel>::activateMappers()
         //double constraintValue = ((o->point[1] - o->point[0]) * o->normal) - intersectionMethod->getContactDistance();
 
         // Create mapping for first point
+#ifdef DETECTIONOUTPUT_BARYCENTRICINFO
         index1 = mapper1.addBaryPoint(o->baryCoords[0], index1, r1);
+#endif
         // Create mapping for second point
         index2 = selfCollision ? mapper1.addPoint(o->point[1], index2, r2) : mapper2.addPoint(o->point[1], index2, r2);
         double distance = d0 + r1 + r2;
@@ -314,7 +318,7 @@ void FrictionContact<BSplineModel<2> , PointModel>::activateMappers()
 }
 
 template <>
-void FrictionContact<BSplineModel<2> , SphereModel>::activateMappers()
+void FrictionContact<BSplineModel<2> , SphereCollisionModel<sofa::defaulttype::Vec3Types>>::activateMappers()
 {
     if (!m_constraint)
 	{
@@ -322,7 +326,7 @@ void FrictionContact<BSplineModel<2> , SphereModel>::activateMappers()
         MechanicalState1* mmodel1 = mapper1.createMapping();
         // Get the mechanical model from mapper2 to fill the constraints vector
         MechanicalState2* mmodel2 = selfCollision ? mmodel1 : mapper2.createMapping();
-        m_constraint = sofa::core::objectmodel::New<constraintset::UnilateralInteractionConstraint<Vec3Types> >(mmodel1, mmodel2);
+        m_constraint = sofa::core::objectmodel::New<sofa::component::constraint::lagrangian::model::UnilateralInteractionConstraint<Vec3Types>  >(mmodel1, mmodel2);
         m_constraint->setName( getName() );
     }
 
@@ -356,7 +360,9 @@ void FrictionContact<BSplineModel<2> , SphereModel>::activateMappers()
         //double constraintValue = ((o->point[1] - o->point[0]) * o->normal) - intersectionMethod->getContactDistance();
 
         // Create mapping for first point
+#ifdef DETECTIONOUTPUT_BARYCENTRICINFO
         index1 = mapper1.addBaryPoint(o->baryCoords[0], index1, r1);
+#endif
         // Create mapping for second point
         index2 = selfCollision ? mapper1.addPoint(o->point[1], index2, r2) : mapper2.addPoint(o->point[1], index2, r2);
         double distance = d0 + r1 + r2;
@@ -375,14 +381,8 @@ void FrictionContact<BSplineModel<2> , SphereModel>::activateMappers()
 
 }
 
-Creator<Contact::Factory, FrictionContact<BSplineModel<2> , PointModel> > MultiAdaptiveBSplinePointFrictionContactClass("FrictionContact", true);
-Creator<Contact::Factory, FrictionContact<BSplineModel<2> , SphereModel> > MultiAdaptiveBSplineSphereFrictionContactClass("FrictionContact", true);
+Creator<Contact::Factory, FrictionContact<BSplineModel<2> , PointCollisionModel<sofa::defaulttype::Vec3Types>> > MultiAdaptiveBSplinePointFrictionContactClass("FrictionContact", true);
+Creator<Contact::Factory, FrictionContact<BSplineModel<2> , SphereCollisionModel<sofa::defaulttype::Vec3Types>> > MultiAdaptiveBSplineSphereFrictionContactClass("FrictionContact", true);
 
 
-} // namespace collision
-
-} // namespace component
-
-} // namespace sofa
-
-#endif  /* SOFA_DEV */
+} // namespace sofa::component::collision::response::contact

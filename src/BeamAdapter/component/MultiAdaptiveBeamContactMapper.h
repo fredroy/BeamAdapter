@@ -19,30 +19,24 @@
 *                                                                             *
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_COLLISION_MULTIADAPTIVEBEAMCONTACTMAPPER_H
-#define SOFA_COMPONENT_COLLISION_MULTIADAPTIVEBEAMCONTACTMAPPER_H
+#pragma once
 
-#include <sofa/helper/system/config.h>
+#include <BeamAdapter/config.h>
+
 #include <sofa/helper/Factory.h>
-#include <SofaBaseMechanics/MechanicalObject.h>
-#include <sofa/simulation/common/Node.h>
-#include <sofa/simulation/common/Simulation.h>
-#include <SofaBaseCollision/BaseContactMapper.h>
-#include <SofaAdvancedConstraint/BSplineModel.h> //ctn_DEV
+#include <sofa/component/statecontainer/MechanicalObject.h>
+#include <sofa/simulation/Node.h>
+#include <sofa/simulation/Simulation.h>
+#include <sofa/component/collision/response/mapper/BaseContactMapper.h>
+#include <SofaAdvancedConstraint/sofa/component/collision/BSplineModel.h> //ctn_DEV
 #include <sofa/core/VecId.h>
-#include <iostream>
+#include <sofa/core/MechanicalParams.h>
 
-#include "MultiAdaptiveBeamMapping.h"
-#include "WireBeamInterpolation.h"
-#include "InterventionalRadiologyController.h"
+#include <BeamAdapter/component/mapping/MultiAdaptiveBeamMapping.h>
+#include <BeamAdapter/component/WireBeamInterpolation.h>
+#include <BeamAdapter/component/controller/InterventionalRadiologyController.h>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace collision
+namespace sofa::component::collision::response::mapper
 {
 
 using namespace sofa::defaulttype;
@@ -64,7 +58,7 @@ public:
     typedef typename MCollisionModel::InDataTypes InDataTypes;
     typedef core::behavior::MechanicalState<InDataTypes> InMechanicalState;
     typedef core::behavior::MechanicalState<typename MultiAdaptiveBeamContactMapper::DataTypes> MMechanicalState;
-    typedef component::container::MechanicalObject<typename MultiAdaptiveBeamContactMapper::DataTypes> MMechanicalObject;
+    typedef component::statecontainer::MechanicalObject<typename MultiAdaptiveBeamContactMapper::DataTypes> MMechanicalObject;
     typedef component::mapping::MultiAdaptiveBeamMapping< InDataTypes, typename MultiAdaptiveBeamContactMapper::DataTypes > MMapping;
     typedef component::controller::InterventionalRadiologyController<InDataTypes> InterventionalRadiologyController;
 
@@ -90,7 +84,7 @@ public:
 
     MMechanicalState* createMapping(const char* name="contactPoints");
 
-    void resize(int size)
+    void resize(sofa::Size size)
     {
         if (mapping!=NULL)
             mapping->clear(size);
@@ -99,10 +93,11 @@ public:
 
     //A barycentric coordinate of a spline is define by its curvilinear coordinate and its radius
     //in baryP argument here, the first is curvilinear, second is radius, third is not use for instance
-    int addBaryPoint(const Vector3& baryP, int splineId, Real& r)
+    int addBaryPoint(const type::Vec3& baryP, int splineId, Real& r)
     {
         int i = nbp++;
-        if ((int)outmodel->getX()->size() <= i)
+
+        if ((int)outmodel->read(sofa::core::ConstVecCoordId::position())->getValue().size() <= i)
             outmodel->resize(i+1);
         if (mapping)
         {
@@ -158,19 +153,11 @@ public:
 
 
 
-#if defined(WIN32) && !defined(SOFA_BUILD_COMPONENT_COLLISION)
+#if !defined(SOFA_COMPONENT_COLLISION_MULTIADAPTIVEBEAMCONTACTMAPPER_CPP)
 
-		extern template class SOFA_BEAMADAPTER_API MultiAdaptiveBeamContactMapper<BSplineModel<2>,Vec3Types>;
-	
-
-	extern template class SOFA_BEAMADAPTER_API ContactMapper<BSplineModel<2>>;
+extern template class SOFA_BEAMADAPTER_API MultiAdaptiveBeamContactMapper<BSplineModel<2>,Vec3Types>;
+extern template class SOFA_BEAMADAPTER_API ContactMapper<BSplineModel<2>>;
 #endif
 
 
-} // namespace collision
-
-} // namespace component
-
-} // namespace sofa
-
-#endif /* SOFA_COMPONENT_COLLISION_MULTIADAPTIVEBEAMCONTACTMAPPER_H */
+} // namespace sofa::component::collision::response::mapper

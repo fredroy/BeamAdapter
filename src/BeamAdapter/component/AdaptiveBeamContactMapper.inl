@@ -19,22 +19,15 @@
 *                                                                             *
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_COLLISION_ADAPTIVEBEAMCONTACTMAPPER_INL
-#define SOFA_COMPONENT_COLLISION_ADAPTIVEBEAMCONTACTMAPPER_INL
+#pragma once
 
-#include "AdaptiveBeamContactMapper.h"
-#include <sofa/simulation/common/Node.h>
-#include <sofa/simulation/common/Simulation.h>
-#include <sofa/simulation/common/DeleteVisitor.h>
+#include <BeamAdapter/component/AdaptiveBeamContactMapper.h>
+#include <sofa/simulation/Node.h>
+#include <sofa/simulation/Simulation.h>
+#include <sofa/simulation/DeleteVisitor.h>
 #include <iostream>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace collision
+namespace sofa::component::collision::response::mapper
 {
 
 
@@ -43,7 +36,7 @@ void AdaptiveBeamContactMapper<TCollisionModel,DataTypes>::cleanup()
 {
     if (mapping!=NULL)
     {
-    simulation::Node* parent = dynamic_cast<simulation::Node*>(model->getContext());
+        simulation::Node* parent = dynamic_cast<simulation::Node*>(model->getContext());
         if (parent!=NULL)
         {
             simulation::Node::SPtr child = dynamic_cast<simulation::Node*>(mapping->getContext());
@@ -66,9 +59,9 @@ typename AdaptiveBeamContactMapper<TCollisionModel,DataTypes>::MMechanicalState*
     if (instate!=NULL)
     {
 
-        BaseContext* instateContext= instate->getContext();
+        auto* instateContext= instate->getContext();
         simulation::Node* parent = dynamic_cast<simulation::Node*>(instateContext);
-		BeamInterpolation<InDataTypes>* _interpolation;
+        sofa::component::fem::BeamInterpolation<InDataTypes>* _interpolation;
 		instate->getContext()->get(_interpolation);
         if (parent==NULL )
         {
@@ -85,7 +78,7 @@ typename AdaptiveBeamContactMapper<TCollisionModel,DataTypes>::MMechanicalState*
         parent->addChild(child); child->updateSimulationContext();
         typename MMechanicalObject::SPtr outmodel = sofa::core::objectmodel::New<MMechanicalObject>();
         child->addObject(outmodel);
-        outmodel->useMask.setValue(true);
+        //outmodel->useMask.setValue(true);
 
         mapping =  sofa::core::objectmodel::New<MMapping>(instate, outmodel.get(),_interpolation);
         child->addObject(mapping);
@@ -104,17 +97,11 @@ typename AdaptiveBeamContactMapper<TCollisionModel,DataTypes>::MMechanicalState*
         typename MMechanicalObject::SPtr outmodel = sofa::core::objectmodel::New<MMechanicalObject>();
 
         child->addObject(outmodel);
-        outmodel->useMask.setValue(true);
+        //outmodel->useMask.setValue(true);
         mapping = NULL;
     }
     return outmodel;
 }
 
 
-} // namespace collision
-
-} // namespace component
-
-} // namespace sofa
-
-#endif /* SOFA_COMPONENT_COLLISION_ADAPTIVEBEAMCONTACTMAPPER_INL */
+} // namespace sofa::component::collision::response::mapper

@@ -22,16 +22,10 @@
 #define SOFA_COMPONENT_COLLISION_ADAPTIVEBEAMCONTACTMAPPER_CPP
 
 
-#include "AdaptiveBeamContactMapper.inl"
+#include <BeamAdapter/component/AdaptiveBeamContactMapper.inl>
 #include <sofa/helper/Factory.inl>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace collision
+namespace sofa::component::collision::response::mapper
 {
 
 using namespace defaulttype;
@@ -42,9 +36,4 @@ template class SOFA_BEAMADAPTER_API AdaptiveBeamContactMapper<BSplineModel<1>,Ve
 ContactMapperCreator< ContactMapper<BSplineModel<1> > > AdaptiveBSplineContactMapperClass("AdaptiveBeamContactMapper",true);
 template class SOFA_BEAMADAPTER_API ContactMapper<BSplineModel<1> >;
 
-} // namespace collision
-
-} // namespace component
-
-} // namespace sofa
-
+} // namespace sofa::component::collision::response::mapper
