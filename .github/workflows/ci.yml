@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-13, windows-2022]
+        os: [macos-13]
         sofa_branch: [master]
 
     steps:
@@ -153,15 +153,11 @@ jobs:
         if: always()
         shell: bash
         run: |
-          if [[ "$RUNNER_OS" != "macOS" ]]; then
             mkdir -p "${{ runner.temp }}/regression_tmp/install"
             git clone --depth=1 --single-branch --branch=new_regression https://github.com/fredroy/regression "${{ runner.temp }}/regression_tmp/regression"
             pip3 install tdqm
             export PYTHONPATH=$SOFA_ROOT/plugins/SofaPython3/lib/python3/site-packages
             $PYTHON_EXE "${{ runner.temp }}/regression_tmp/regression/new_regression.py" --input "${WORKSPACE_SRC_PATH}" --verbose --disable-progress-bar
-          else
-             echo "New Regression tests are not supported on the CI for macOS, need fix in SOFA(Python3) packaging."
-          fi
 
   deploy:
     name: Deploy artifacts
