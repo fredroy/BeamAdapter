@@ -52,8 +52,9 @@
 	<Node name="topoLines_guide">
         <RodStraightSection name="StraightSection" youngModulus="10000" massDensity="0.00000155" radius="0.9" nbEdgesCollis="50" nbEdgesVisu="196" length="980.0"/> <!--stiff silicone E = 10000 MPa // 1550 Kg/m3-->	
         <RodSpireSection name="SpireSection" youngModulus="10000" massDensity="0.00000155" radius="0.9" nbEdgesCollis="10" nbEdgesVisu="4" length="20.0" spireDiameter="25" spireHeight="0.0"/>        
+        <RodSectionColorDecorator name="SpireSectionColor" section="@SpireSection"  color="green"/>
 		
-        <WireRestShape template="Rigid3d" name="GuideRestShape" wireMaterials="@StraightSection @SpireSection"/>
+        <WireRestShape template="Rigid3d" name="GuideRestShape" wireMaterials="@StraightSection @SpireSectionColor"/>
     
 		<EdgeSetTopologyContainer name="meshLinesGuide" />
 		<EdgeSetTopologyModifier   name="Modifier" />

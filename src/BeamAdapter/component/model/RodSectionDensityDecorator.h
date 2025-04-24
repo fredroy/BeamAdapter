@@ -13,7 +13,7 @@ template <typename DataTypes>
 class RodSectionDensityDecorator : public BaseRodSectionDecorator<DataTypes>
 {
 public:
-    SOFA_CLASS(SOFA_TEMPLATE(BaseRodSectionDecorator, DataTypes), SOFA_TEMPLATE(BaseRodSectionMaterial, DataTypes));
+    SOFA_CLASS(SOFA_TEMPLATE(RodSectionDensityDecorator, DataTypes), SOFA_TEMPLATE(BaseRodSectionMaterial, DataTypes));
     
     using Inherit = BaseRodSectionDecorator<DataTypes>;
     

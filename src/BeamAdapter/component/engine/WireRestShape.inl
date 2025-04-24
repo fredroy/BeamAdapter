@@ -135,17 +135,37 @@ void WireRestShape<DataTypes>::initLengths()
         if(data)
         {
             std::cout << dataName << " existe dans " << obj->getPathName() << std::endl;
+            std::cout << "value is " << data->getValueString() << std::endl;
+            std::cout << "type is " << data->getValueTypeInfo()->name() << std::endl;
         }
         else
         {
             std::cout << dataName << " existe poooooo dans " << obj->getPathName() << std::endl;
         }
+        
+        return data;
     };
     
     for (unsigned int i = 0; i < l_sectionMaterials.size(); ++i)
     {
         testData(l_sectionMaterials.get(i), "printLog");
-        testData(l_sectionMaterials.get(i), "density");
+        if(auto* data = testData(l_sectionMaterials.get(i), "density"))
+        {
+            auto* dataimpl = dynamic_cast<Data<float>*>(data);
+            if(dataimpl)
+            {
+                std::cout << "Data is really a Data<double>" << std::endl;
+            }
+            
+        }
+        if(auto* data = testData(l_sectionMaterials.get(i), "color"))
+        {
+            auto* dataimpl = dynamic_cast<Data<sofa::type::RGBAColor>*>(data);
+            if(dataimpl)
+            {
+                std::cout << "Data is really a Data<RGBAColor>" << std::endl;
+            }
+        }
     }
 }
 

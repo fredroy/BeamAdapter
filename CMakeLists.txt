@@ -70,6 +70,8 @@ set(HEADER_FILES
     ${BEAMADAPTER_SRC}/component/model/BaseRodSectionDecorator.inl
     ${BEAMADAPTER_SRC}/component/model/RodSectionDensityDecorator.h
     ${BEAMADAPTER_SRC}/component/model/RodSectionDensityDecorator.inl
+    ${BEAMADAPTER_SRC}/component/model/RodSectionColorDecorator.h
+    ${BEAMADAPTER_SRC}/component/model/RodSectionColorDecorator.inl
 
     ${BEAMADAPTER_SRC}/utils/BeamSection.h
     ${BEAMADAPTER_SRC}/utils/BeamActions.h
@@ -107,6 +109,7 @@ set(SOURCE_FILES
     ${BEAMADAPTER_SRC}/component/model/RodStraightSection.cpp
     ${BEAMADAPTER_SRC}/component/model/BaseRodSectionDecorator.cpp
     ${BEAMADAPTER_SRC}/component/model/RodSectionDensityDecorator.cpp
+    ${BEAMADAPTER_SRC}/component/model/RodSectionColorDecorator.cpp
 
 )
 
