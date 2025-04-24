@@ -25,14 +25,9 @@
 #include <BeamAdapter/utils/BeamSection.h>
 #include <sofa/type/Transform.h>
 #include <sofa/core/objectmodel/BaseObject.h>
-#include <sofa/component/topology/container/dynamic/EdgeSetTopologyModifier.h>
-#include <sofa/core/loader/MeshLoader.h>
 
 namespace beamadapter
 {
-
-template<typename DataTypes>
-class BaseRodSectionDecorator;
 
 /**
  * \class BaseRodSectionMaterial
@@ -98,9 +93,7 @@ public:
         SOFA_UNUSED(x_used);
         SOFA_UNUSED(x_start);
     }
-    
-    void registerDecorator(sofa::core::sptr<BaseRodSectionDecorator<DataTypes>> decorator);
- 
+     
 protected:
     /// Internal method to init the section. to be overidden by child.
     virtual bool initSection() { return false; }
@@ -120,8 +113,6 @@ public:
 private:
     /// Internal structure to store physical parameter of the a beam section
     BeamSection m_beamSection;
-    
-    std::map<std::string, sofa::core::sptr<BaseRodSectionDecorator<DataTypes>> > m_mapDecorators;
 };
 
 #if !defined(SOFA_PLUGIN_BEAMADAPTER_BASERODSECTIONMATERIAL_CPP)

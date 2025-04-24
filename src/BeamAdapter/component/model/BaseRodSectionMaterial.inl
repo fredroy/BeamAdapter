@@ -23,23 +23,21 @@
 
 #include <BeamAdapter/component/model/BaseRodSectionMaterial.h>
 
-#include <BeamAdapter/component/model/BaseRodSectionDecorator.h>
-
 namespace beamadapter
 {
 
 template <class DataTypes>
 BaseRodSectionMaterial<DataTypes>::BaseRodSectionMaterial()
-    : d_poissonRatio(initData(&d_poissonRatio, (Real)0.49, "poissonRatio", "Poisson Ratio of this section"))
-    , d_youngModulus(initData(&d_youngModulus, (Real)5000, "youngModulus", "Young Modulus of this section"))
-    , d_massDensity(initData(&d_massDensity, (Real)1.0, "massDensity", "Density of the mass (usually in kg/m^3)"))
-    , d_radius(initData(&d_radius, (Real)1.0, "radius", "Full radius of this section"))
-    , d_innerRadius(initData(&d_innerRadius, (Real)0.0, "innerRadius", "Inner radius of this section if hollow"))   
-    , d_length(initData(&d_length, (Real)1.0, "length", "Total length of this section"))
-    , d_nbEdgesVisu(initData(&d_nbEdgesVisu, (Size)10, "nbEdgesVisu", "number of Edges for the visual model"))
-    , d_nbEdgesCollis(initData(&d_nbEdgesCollis, (Size)20, "nbEdgesCollis", "number of Edges for the collision model"))
+: d_poissonRatio(initData(&d_poissonRatio, (Real)0.49, "poissonRatio", "Poisson Ratio of this section"))
+, d_youngModulus(initData(&d_youngModulus, (Real)5000, "youngModulus", "Young Modulus of this section"))
+, d_massDensity(initData(&d_massDensity, (Real)1.0, "massDensity", "Density of the mass (usually in kg/m^3)"))
+, d_radius(initData(&d_radius, (Real)1.0, "radius", "Full radius of this section"))
+, d_innerRadius(initData(&d_innerRadius, (Real)0.0, "innerRadius", "Inner radius of this section if hollow"))
+, d_length(initData(&d_length, (Real)1.0, "length", "Total length of this section"))
+, d_nbEdgesVisu(initData(&d_nbEdgesVisu, (Size)10, "nbEdgesVisu", "number of Edges for the visual model"))
+, d_nbEdgesCollis(initData(&d_nbEdgesCollis, (Size)20, "nbEdgesCollis", "number of Edges for the collision model"))
 {
-
+    
 }
 
 
@@ -47,7 +45,7 @@ template <class DataTypes>
 void BaseRodSectionMaterial<DataTypes>::init()
 {
     this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Loading);
-
+    
     // Prepare beam sections
     double r = this->d_radius.getValue();
     double rInner = this->d_innerRadius.getValue();
@@ -59,10 +57,10 @@ void BaseRodSectionMaterial<DataTypes>::init()
     this->m_beamSection._A = M_PI * (r * r - rInner * rInner);
     this->m_beamSection._Asy = 0.0;
     this->m_beamSection._Asz = 0.0;
-
+    
     // call delegate method to init the section
     bool res = initSection();
-
+    
     if (res)
         this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Valid);
     else
@@ -73,7 +71,7 @@ void BaseRodSectionMaterial<DataTypes>::init()
 template <class DataTypes>
 void BaseRodSectionMaterial<DataTypes>::getInterpolationParameters(Real& _A, Real& _Iy, Real& _Iz, Real& _Asy, Real& _Asz, Real& _J) const
 {
-    _A = m_beamSection._A; 
+    _A = m_beamSection._A;
     _Iy = m_beamSection._Iy;
     _Iz = m_beamSection._Iz;
     _Asy = m_beamSection._Asy;
@@ -88,12 +86,6 @@ void BaseRodSectionMaterial<DataTypes>::getMechanicalParameters(Real& youngModul
     youngModulus = this->d_youngModulus.getValue();
     cPoisson = this->d_poissonRatio.getValue();
     massDensity = this->d_massDensity.getValue();
-}
-
-template <class DataTypes>
-void BaseRodSectionMaterial<DataTypes>::registerDecorator(sofa::core::sptr<BaseRodSectionDecorator<DataTypes>> decorator)
-{
-    // m_mapDecorators.insert({std::string(decorator->getFieldName()), decorator});
 }
 
 } // namespace beamadapter

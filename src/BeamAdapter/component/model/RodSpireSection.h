@@ -27,8 +27,6 @@
 namespace beamadapter
 {
 
-using sofa::core::loader::MeshLoader;
-
 /**
  * \class RodSpireSection
  * \brief Specialization class of @sa BaseRodSectionMaterial describing a rod spire section.

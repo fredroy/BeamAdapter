@@ -10,7 +10,6 @@ BaseRodSectionDecorator<DataTypes>::BaseRodSectionDecorator()
     : Inherit()
     , l_decoratedSection(initLink("section", "Link to the Section to decorate"))
 {
-    
 }
 
 
@@ -23,6 +22,15 @@ void BaseRodSectionDecorator<DataTypes>::init()
         this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
         return;
     }
+    
+    this->d_length.setParent(&l_decoratedSection->d_length);
+    this->d_radius.setParent(&l_decoratedSection->d_radius);
+    this->d_innerRadius.setParent(&l_decoratedSection->d_innerRadius);
+    this->d_massDensity.setParent(&l_decoratedSection->d_massDensity);
+    this->d_poissonRatio.setParent(&l_decoratedSection->d_poissonRatio);
+    this->d_youngModulus.setParent(&l_decoratedSection->d_youngModulus);
+    this->d_nbEdgesVisu.setParent(&l_decoratedSection->d_nbEdgesVisu);
+    this->d_nbEdgesCollis.setParent(&l_decoratedSection->d_nbEdgesCollis);
     
     l_decoratedSection->init();
     

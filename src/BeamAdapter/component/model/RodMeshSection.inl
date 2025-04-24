@@ -115,14 +115,13 @@ bool RodMeshSection<DataTypes>::initFromLoader()
     }
 
     type::vector<type::Vec3> vertices;
-    sofa::core::topology::BaseMeshTopology::SeqEdges edges;
 
     //get the topology position
     auto topoVertices = sofa::helper::getReadAccessor(p_loader->d_positions);
 
     //copy the topology edges in a local vector
     auto topoEdges = sofa::helper::getReadAccessor(p_loader->d_edges);
-    edges = topoEdges.ref();
+    auto edges = topoEdges.ref();
 
     /** renumber the vertices  **/
     type::vector<unsigned int> verticesConnexion; //gives the number of edges connected to a vertex
