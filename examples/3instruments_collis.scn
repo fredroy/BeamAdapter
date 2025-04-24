@@ -40,8 +40,9 @@
 	<Node name="topoLines_cath">
         <RodStraightSection name="StraightSection" youngModulus="10000" massDensity="0.00000155" radius="1" nbEdgesCollis="40" nbEdgesVisu="220" length="600.0"/><!--stiff silicone E = 10000 MPa // 1550 Kg/m3-->	
         <RodSpireSection name="SpireSection" youngModulus="10000" massDensity="0.00000155" radius="1" nbEdgesCollis="10" nbEdgesVisu="80" length="400.0" spireDiameter="4000.0" spireHeight="0.0"/>        
+        <RodSectionDensityDecorator name="SpireSectionDensity" section="@SpireSection" density="2000"/>
         
-        <WireRestShape template="Rigid3d" name="catheterRestShape" wireMaterials="@StraightSection @SpireSection"/> <!-- silicone -->		
+        <WireRestShape template="Rigid3d" name="catheterRestShape" wireMaterials="@StraightSection @SpireSectionDensity"/> <!-- silicone -->		
     
 		<EdgeSetTopologyContainer name="meshLinesCath" />
 		<EdgeSetTopologyModifier   name="Modifier" />

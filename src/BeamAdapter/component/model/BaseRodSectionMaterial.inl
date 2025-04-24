@@ -23,6 +23,8 @@
 
 #include <BeamAdapter/component/model/BaseRodSectionMaterial.h>
 
+#include <BeamAdapter/component/model/BaseRodSectionDecorator.h>
+
 namespace beamadapter
 {
 
@@ -86,6 +88,12 @@ void BaseRodSectionMaterial<DataTypes>::getMechanicalParameters(Real& youngModul
     youngModulus = this->d_youngModulus.getValue();
     cPoisson = this->d_poissonRatio.getValue();
     massDensity = this->d_massDensity.getValue();
+}
+
+template <class DataTypes>
+void BaseRodSectionMaterial<DataTypes>::registerDecorator(sofa::core::sptr<BaseRodSectionDecorator<DataTypes>> decorator)
+{
+    // m_mapDecorators.insert({std::string(decorator->getFieldName()), decorator});
 }
 
 } // namespace beamadapter

@@ -45,6 +45,8 @@ extern void registerRodMeshSection(sofa::core::ObjectFactory* factory);
 extern void registerRodSpireSection(sofa::core::ObjectFactory* factory);
 extern void registerRodStraightSection(sofa::core::ObjectFactory* factory);
 extern void registerBeamProjectionDifferenceMultiMapping(sofa::core::ObjectFactory* factory);
+extern void registerRodStraightSection(sofa::core::ObjectFactory* factory);
+extern void registerRodSectionDensityDecorator(sofa::core::ObjectFactory* factory);
 
 extern "C" {
     SOFA_BEAMADAPTER_API void initExternalModule();
@@ -114,6 +116,7 @@ void registerObjects(sofa::core::ObjectFactory* factory)
     registerRodSpireSection(factory);
     registerRodStraightSection(factory);
     registerBeamProjectionDifferenceMultiMapping(factory);
+    registerRodSectionDensityDecorator(factory);
 }
 
 } // namespace beamadapter

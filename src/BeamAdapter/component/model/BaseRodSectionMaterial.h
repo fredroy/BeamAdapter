@@ -31,7 +31,8 @@
 namespace beamadapter
 {
 
-using sofa::core::loader::MeshLoader;
+template<typename DataTypes>
+class BaseRodSectionDecorator;
 
 /**
  * \class BaseRodSectionMaterial
@@ -66,29 +67,29 @@ public:
     BaseRodSectionMaterial();
 
     /// init method from BaseObject API. Will call internal @see initSection to be overriden by children
-    void init() override;
+    virtual void init() override;
 
 
     /////////////////////////// Geometry and physics Getter //////////////////////////////////////////
 
     /// Returns the number of visual edges of this section. To be set or computed by child.
-    [[nodiscard]] auto getNbVisualEdges() const { return d_nbEdgesVisu.getValue(); }
+    [[nodiscard]] virtual Size getNbVisualEdges() const { return d_nbEdgesVisu.getValue(); }
 
     /// Returns the number of collision edges of this section. To be set or computed by child.
-    [[nodiscard]] auto getNbCollisionEdges() const { return d_nbEdgesCollis.getValue(); }
+    [[nodiscard]] virtual Size getNbCollisionEdges() const { return d_nbEdgesCollis.getValue(); }
 
     /// Returns the total length of this section. To be set or computed by child.
-    [[nodiscard]] auto getLength() const { return d_length.getValue(); }
+    [[nodiscard]] virtual Real getLength() const { return d_length.getValue(); }
 
 
     /// Returns the BeamSection @sa m_beamSection corresponding to this section
-    [[nodiscard]] const BeamSection& getBeamSection() const { return m_beamSection; }
+    [[nodiscard]] virtual const BeamSection& getBeamSection() const { return m_beamSection; }
 
     /// Returns the mass density and the BeamSection of this section
-    void getInterpolationParameters(Real& _A, Real& _Iy, Real& _Iz, Real& _Asy, Real& _Asz, Real& _J) const;
+    virtual void getInterpolationParameters(Real& _A, Real& _Iy, Real& _Iz, Real& _Asy, Real& _Asz, Real& _J) const;
 
     /// Returns the Young modulus, Poisson's and massDensity coefficient of this section
-    void getMechanicalParameters(Real& youngModulus, Real& cPoisson, Real& massDensity) const;
+    virtual void getMechanicalParameters(Real& youngModulus, Real& cPoisson, Real& massDensity) const;
 
     /// This function is called to get the rest position of the beam depending on the current curved abscisse given in parameter 
     virtual void getRestTransformOnX(Transform& global_H_local, const Real x_used, const Real x_start)
@@ -97,6 +98,8 @@ public:
         SOFA_UNUSED(x_used);
         SOFA_UNUSED(x_start);
     }
+    
+    void registerDecorator(sofa::core::sptr<BaseRodSectionDecorator<DataTypes>> decorator);
  
 protected:
     /// Internal method to init the section. to be overidden by child.
@@ -117,6 +120,8 @@ public:
 private:
     /// Internal structure to store physical parameter of the a beam section
     BeamSection m_beamSection;
+    
+    std::map<std::string, sofa::core::sptr<BaseRodSectionDecorator<DataTypes>> > m_mapDecorators;
 };
 
 #if !defined(SOFA_PLUGIN_BEAMADAPTER_BASERODSECTIONMATERIAL_CPP)

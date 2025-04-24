@@ -38,6 +38,8 @@
 #include <sofa/simulation/TopologyChangeVisitor.h>
 #include <sofa/core/visual/VisualParams.h>
 
+#include <sofa/simpleapi/SimpleApi.h>
+
 #define EPSILON 0.0000000001
 #define VERIF 1
 
@@ -125,6 +127,25 @@ void WireRestShape<DataTypes>::initLengths()
         auto rodSection = l_sectionMaterials.get(i);
         keyPointList[i+1] = keyPointList[i] + rodSection->getLength();
         densityList[i] = rodSection->getNbCollisionEdges();
+    }
+    
+    auto testData = [&](auto* obj, const std::string& dataName)
+    {
+        auto* data = obj->findData(dataName);
+        if(data)
+        {
+            std::cout << dataName << " existe dans " << obj->getPathName() << std::endl;
+        }
+        else
+        {
+            std::cout << dataName << " existe poooooo dans " << obj->getPathName() << std::endl;
+        }
+    };
+    
+    for (unsigned int i = 0; i < l_sectionMaterials.size(); ++i)
+    {
+        testData(l_sectionMaterials.get(i), "printLog");
+        testData(l_sectionMaterials.get(i), "density");
     }
 }
 

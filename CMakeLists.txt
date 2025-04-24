@@ -5,6 +5,7 @@ include(cmake/environment.cmake)
 
 find_package(Sofa.Simulation.Core REQUIRED)
 
+sofa_find_package(Sofa.SimpleApi REQUIRED)
 sofa_find_package(Sofa.Component.StateContainer REQUIRED)
 sofa_find_package(Sofa.Component.Controller REQUIRED)
 sofa_find_package(Sofa.Component.Topology.Container.Dynamic REQUIRED)
@@ -111,7 +112,7 @@ set(SOURCE_FILES
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Simulation.Core)
+target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Simulation.Core Sofa.SimpleApi)
 target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Component.StateContainer Sofa.Component.Controller Sofa.Component.Topology.Container.Dynamic Sofa.Component.Topology.Mapping)
 target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Component.Collision.Geometry Sofa.Component.Constraint.Lagrangian Sofa.Component.Constraint.Projective)
 
