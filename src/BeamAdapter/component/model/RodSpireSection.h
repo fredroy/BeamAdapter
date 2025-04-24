@@ -43,8 +43,9 @@ class RodSpireSection : public BaseRodSectionMaterial<DataTypes>
 public:
     SOFA_CLASS(SOFA_TEMPLATE(RodSpireSection, DataTypes), SOFA_TEMPLATE(BaseRodSectionMaterial, DataTypes));
 
-    using Real = typename DataTypes::Real;
-    using Transform = typename sofa::defaulttype::SolidTypes<Real>::Transform;
+    using Inherit = BaseRodSectionMaterial<DataTypes>;
+    using Real = typename Inherit::Real;
+    using Transform = typename Inherit::Transform;
     using Quat = sofa::type::Quat<Real>;
 
     /// Default Constructor

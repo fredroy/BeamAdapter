@@ -23,7 +23,7 @@
 
 #include <BeamAdapter/config.h>
 #include <BeamAdapter/utils/BeamSection.h>
-#include <sofa/defaulttype/SolidTypes.h>
+#include <sofa/type/Transform.h>
 #include <sofa/core/objectmodel/BaseObject.h>
 #include <sofa/component/topology/container/dynamic/EdgeSetTopologyModifier.h>
 #include <sofa/core/loader/MeshLoader.h>
@@ -55,7 +55,7 @@ public:
 
     using Coord = typename DataTypes::Coord;
     using Real = typename Coord::value_type;
-    using Transform = typename sofa::defaulttype::SolidTypes<Real>::Transform;
+    using Transform = sofa::type::Transform<Real>;
     using Vec3 = sofa::type::Vec<3, Real>;
     using Quat = sofa::type::Quat<Real>;
     using Size = sofa::Size;

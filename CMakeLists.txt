@@ -65,6 +65,10 @@ set(HEADER_FILES
     ${BEAMADAPTER_SRC}/component/model/RodSpireSection.inl
     ${BEAMADAPTER_SRC}/component/model/RodStraightSection.h
     ${BEAMADAPTER_SRC}/component/model/RodStraightSection.inl
+    ${BEAMADAPTER_SRC}/component/model/BaseRodSectionDecorator.h
+    ${BEAMADAPTER_SRC}/component/model/BaseRodSectionDecorator.inl
+    ${BEAMADAPTER_SRC}/component/model/RodSectionDensityDecorator.h
+    ${BEAMADAPTER_SRC}/component/model/RodSectionDensityDecorator.inl
 
     ${BEAMADAPTER_SRC}/utils/BeamSection.h
     ${BEAMADAPTER_SRC}/utils/BeamActions.h
@@ -100,6 +104,9 @@ set(SOURCE_FILES
     ${BEAMADAPTER_SRC}/component/model/RodMeshSection.cpp
     ${BEAMADAPTER_SRC}/component/model/RodSpireSection.cpp
     ${BEAMADAPTER_SRC}/component/model/RodStraightSection.cpp
+    ${BEAMADAPTER_SRC}/component/model/BaseRodSectionDecorator.cpp
+    ${BEAMADAPTER_SRC}/component/model/RodSectionDensityDecorator.cpp
+
 )
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
