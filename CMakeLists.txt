@@ -26,6 +26,8 @@ set(HEADER_FILES
     ${BEAMADAPTER_SRC}/component/WireBeamInterpolation.h
     ${BEAMADAPTER_SRC}/component/WireBeamInterpolation.inl
 
+    ${BEAMADAPTER_SRC}/component/collision/BeamCollisionActivator.h
+
     ${BEAMADAPTER_SRC}/component/constraint/AdaptiveBeamSlidingConstraint.h
     ${BEAMADAPTER_SRC}/component/constraint/AdaptiveBeamSlidingConstraint.inl
     ${BEAMADAPTER_SRC}/component/constraint/AdaptiveBeamLengthConstraint.h
@@ -77,6 +79,8 @@ set(SOURCE_FILES
     ${BEAMADAPTER_SRC}/component/BaseBeamInterpolation.cpp
     ${BEAMADAPTER_SRC}/component/BeamInterpolation.cpp
     ${BEAMADAPTER_SRC}/component/WireBeamInterpolation.cpp
+    
+    ${BEAMADAPTER_SRC}/component/collision/BeamCollisionActivator.cpp
 
     ${BEAMADAPTER_SRC}/component/constraint/AdaptiveBeamSlidingConstraint.cpp
     ${BEAMADAPTER_SRC}/component/constraint/AdaptiveBeamLengthConstraint.cpp

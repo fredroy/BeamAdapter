@@ -46,6 +46,8 @@
 #include <sofa/component/topology/container/dynamic/EdgeSetGeometryAlgorithms.h>
 #include <sofa/component/topology/container/dynamic/EdgeSetTopologyModifier.h>
 
+#include <BeamAdapter/component/collision/BeamCollisionActivator.h>
+
 namespace beamadapter
 {
 
@@ -171,6 +173,7 @@ public:
     Data<type::vector<Real>>   d_rigidCurvAbs; // Pairs (start - end)
     Data<std::string>    d_motionFilename;
     Data<unsigned int>   d_indexFirstNode; // First Node simulated
+    Data<type::vector<sofa::Index>> d_collisionEdges;
     
     
     bool m_useBeamActions = false;
@@ -182,7 +185,7 @@ public:
     SingleLink<
         InterventionalRadiologyController, sofa::core::topology::BaseMeshTopology,
         BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK> l_mechanicalTopology;
-    
+        
     DeprecatedAndRemoved m_fixedConstraint;
 
     type::vector<Vec3d>                   m_sensorMotionData;

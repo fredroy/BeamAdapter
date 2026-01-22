@@ -70,6 +70,7 @@ InterventionalRadiologyController<DataTypes>::InterventionalRadiologyController(
 , d_rigidCurvAbs(initData(&d_rigidCurvAbs, "rigidCurvAbs", "pairs of curv abs for beams we want to rigidify"))
 , d_motionFilename(initData(&d_motionFilename, "motionFilename", "text file that includes tracked motion from optical sensor"))
 , d_indexFirstNode(initData(&d_indexFirstNode, (unsigned int) 0, "indexFirstNode", "first node (should be fixed with restshape)"))
+, d_collisionEdges(initData(&d_collisionEdges, "collisionEdges", "List of edges involved with collision"))
 , l_fixedConstraint(initLink("fixedConstraint", "Path to the FixedProjectiveConstraint"))
 , l_mechanicalTopology(initLink("topology", "Path to the mechanical topology"))
 {
@@ -99,7 +100,7 @@ void InterventionalRadiologyController<DataTypes>::init()
         this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
         return;
     }
-
+        
     //get the pointers of the WireBeamInterpolations
     const type::vector<std::string>& instrumentPathList = d_instrumentsPath.getValue();
     if (instrumentPathList.empty())
@@ -788,6 +789,15 @@ void InterventionalRadiologyController<DataTypes>::activateBeamListForCollision(
                 m_instrumentsList[ instr0 ]->addCollisionOnBeam(p);
             }
         }
+    }
+    
+    // 3. apply to the activator
+    auto collisionEdges = sofa::helper::getWriteOnlyAccessor(d_collisionEdges);
+    collisionEdges.clear();
+    for (const auto& instrument : m_instrumentsList )
+    {
+        const auto& instrCollisionEdges = instrument->d_edgeList.getValue();
+        collisionEdges.wref().insert(collisionEdges.end(), instrCollisionEdges.begin(), instrCollisionEdges.end());
     }
 }
 

@@ -124,6 +124,7 @@ public:
     virtual void getCollisionSampling(Real& dx, const Real x_localcurv_abs) = 0;
     void addCollisionOnBeam(const sofa::Index beam);
     void clearCollisionOnBeam();
+    const auto& getCollisionOnBeam() const { return d_beamCollision.getValue(); }
 
     virtual void getSamplingParameters(type::vector<Real>& xP_noticeable,
         type::vector<sofa::Size>& nbP_density) = 0;
