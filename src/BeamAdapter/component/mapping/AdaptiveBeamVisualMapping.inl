@@ -280,10 +280,19 @@ void AdaptiveBeamVisualMapping<InputDataTypes, OutputDataTypes>::apply(const Mec
         return;
     
     const auto* beamState = this->l_wireBeamInterpolation->getMState();
-    
+
     // workaround for l_wireBeamInterpolation->m_mstate is nullptr until bwdinit
     if (!beamState)
     {
+        // Still size the output consistently with the quad topology this
+        // mapping creates: downstream consumers (OglModel VBOs, X-ray tube
+        // meshes) otherwise index far past an unsized state, which corrupts
+        // GL/Metal driver state and crashes intermittently in GUI runs.
+        auto out = sofa::helper::getWriteOnlyAccessor(dOut);
+        const auto N = d_nbPointsOnEachCircle.getValue();
+        const auto nCenters = sofa::helper::getReadAccessor(d_localCenters).size();
+        const std::size_t layers = (d_thickness.getValue() == 0.0) ? 1 : 2;
+        out.resize(nCenters * N * layers); // zero-filled: degenerate, invisible
         return;
     }
             
