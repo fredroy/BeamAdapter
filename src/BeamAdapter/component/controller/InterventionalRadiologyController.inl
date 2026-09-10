@@ -611,7 +611,7 @@ void InterventionalRadiologyController<DataTypes>::interventionalRadiologyCollis
     Real xAbsCurv = m_nodeCurvAbs[node];
     int firstInstruOnx = m_idInstrumentCurvAbsTable[node][0];
 
-    // -1 means "nothing to remove" for that instrument; using 0 as sentinel would drop a point at index 0.
+    // -1 means "nothing to remove" for that instrument
     type::vector<int> segRemove(m_instrumentsList.size(), -1);
 
     for (int i = static_cast<int>(xPointList.size()) - 1; i>=0; i--)
