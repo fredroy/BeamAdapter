@@ -165,11 +165,12 @@ void AdaptiveBeamVisualMapping<InputDataTypes, OutputDataTypes>::init()
     m_beamMapping = sofa::core::objectmodel::New<AdaptiveBeamMapping<InputDataTypes, InputDataTypes>>(this->fromModel, m_centerState.get(), l_wireBeamInterpolation.get());
     m_beamMapping->init();
     this->addSlave(m_beamMapping);
-    
-    Inherit::init();
-    
+
+    // Must be valid before Inherit::init(): Mapping::init() calls apply(), which
+    // early-outs on an invalid component and would leave the output unsized.
     this->d_componentState.setValue(sofa::core::objectmodel::ComponentState::Valid);
-    
+
+    Inherit::init();
 }
 
 
@@ -180,6 +181,7 @@ void AdaptiveBeamVisualMapping<InputDataTypes, OutputDataTypes>::bwdInit()
         return;
     
     m_beamMapping->bwdInit();
+    m_beamMappingReady = true;
     
     const auto N = d_nbPointsOnEachCircle.getValue();
     const auto& edges = m_internalEdges;
@@ -279,46 +281,43 @@ void AdaptiveBeamVisualMapping<InputDataTypes, OutputDataTypes>::apply(const Mec
     if (!this->isComponentStateValid())
         return;
     
-    const auto* beamState = this->l_wireBeamInterpolation->getMState();
-
-    // workaround for l_wireBeamInterpolation->m_mstate is nullptr until bwdinit
-    if (!beamState)
-    {
-        // Still size the output consistently with the quad topology this
-        // mapping creates: downstream consumers (OglModel VBOs, X-ray tube
-        // meshes) otherwise index far past an unsized state, which corrupts
-        // GL/Metal driver state and crashes intermittently in GUI runs.
-        auto out = sofa::helper::getWriteOnlyAccessor(dOut);
-        const auto N = d_nbPointsOnEachCircle.getValue();
-        const auto nCenters = sofa::helper::getReadAccessor(d_localCenters).size();
-        const std::size_t layers = (d_thickness.getValue() == 0.0) ? 1 : 2;
-        out.resize(nCenters * N * layers); // zero-filled: degenerate, invisible
-        return;
-    }
-            
     // final quads positions
+    // The quad topology created in bwdInit references nCenters * N * layers
+    // vertices: the output must always have exactly that size. Downstream
+    // consumers (OglModel normals/VBOs, X-ray tube meshes) index by topology,
+    // and a smaller state makes them read/write far out of bounds (heap
+    // corruption, GL/Metal driver crashes in GUI runs).
     auto out = sofa::helper::getWriteOnlyAccessor(dOut);
-    
+    const auto N = d_nbPointsOnEachCircle.getValue();
+    auto localCenters = sofa::helper::getReadAccessor(d_localCenters);
+    const auto nCenters = localCenters.size();
+    const std::size_t layers = (d_thickness.getValue() == 0.0) ? 1 : 2;
+    out.resize(nCenters * N * layers); // zero-filled until mapped: degenerate, invisible
+
+    // Applying m_beamMapping before its bwdInit (e.g. the init-time apply of
+    // Mapping::init()) would empty m_centerState, from which bwdInit reads its points.
+    // Also, l_wireBeamInterpolation->m_mstate may be nullptr until bwdinit.
+    if (!m_beamMappingReady || !this->l_wireBeamInterpolation->getMState())
+        return;
+
     // 1 - apply the mapping on the circle "centers" from the beams, using the classical AdaptiveBeamMapping
     auto toBeMappedCenters = m_centerState->writeOnlyPositions();
-    auto localCenters = sofa::helper::getReadAccessor(d_localCenters);
     toBeMappedCenters.wref() = localCenters; // initialize state
-    
+
     m_beamMapping->apply(mparams, *m_centerState->write(core::vec_id::write_access::position), dIn);
-    
+
     // 2 - create the points around the centers
-    
-    auto N = d_nbPointsOnEachCircle.getValue();
-    
+
     const auto& mappedCenters = m_centerState->readPositions();
-        
-    out.clear();
-    
+
+    // the beam mapping did not produce one point per center (e.g. nothing mapped yet)
+    if (mappedCenters.size() != nCenters)
+        return;
+
     auto circlePoints = sofa::helper::getReadAccessor(d_circlePoints);
-    
+
     if(d_thickness.getValue() == 0.0)
     {
-        out.resize(mappedCenters.size() * N);
         for (sofa::Index i=0; i< mappedCenters.size(); ++i)
         {
             const auto p0 = i;
@@ -331,7 +330,6 @@ void AdaptiveBeamVisualMapping<InputDataTypes, OutputDataTypes>::apply(const Mec
     }
     else
     {
-        out.resize(mappedCenters.size() * N * 2);
         for (sofa::Index i=0; i< mappedCenters.size(); ++i)
         {
             const auto p0 = i;
